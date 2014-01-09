@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		889CB8CD186DAD090038F4A4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 889CB8CC186DAD090038F4A4 /* main.cpp */; };
 		889CB8CF186DAD090038F4A4 /* EllipseDetection.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 889CB8CE186DAD090038F4A4 /* EllipseDetection.1 */; };
+		889CBAE4186DCF210038F4A4 /* libX11.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 889CBAE3186DCF200038F4A4 /* libX11.6.dylib */; };
+		88C0F668187E83660005983D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88C0F667187E83660005983D /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +27,12 @@
 
 /* Begin PBXFileReference section */
 		889CB8C9186DAD090038F4A4 /* EllipseDetection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EllipseDetection; sourceTree = BUILT_PRODUCTS_DIR; };
-		889CB8CC186DAD090038F4A4 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		889CB8CE186DAD090038F4A4 /* EllipseDetection.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = EllipseDetection.1; sourceTree = "<group>"; };
+		889CBAE2186DB04B0038F4A4 /* CImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CImg.h; sourceTree = "<group>"; };
+		889CBAE3186DCF200038F4A4 /* libX11.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libX11.6.dylib; path = ../../../../../opt/local/lib/libX11.6.dylib; sourceTree = "<group>"; };
+		889CBAE5186DD3440038F4A4 /* parrot.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = parrot.bmp; path = EllipseDetection/parrot.bmp; sourceTree = "<group>"; };
+		88C0F667187E83660005983D /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = "../projet-MOTTET/main.cpp"; sourceTree = "<group>"; };
+		88C0F669187E84170005983D /* ellipse.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = ellipse.bmp; path = "projet-MOTTET/ellipse.bmp"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				889CBAE4186DCF210038F4A4 /* libX11.6.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +50,9 @@
 		889CB8C0186DAD080038F4A4 = {
 			isa = PBXGroup;
 			children = (
+				88C0F669187E84170005983D /* ellipse.bmp */,
+				889CBAE5186DD3440038F4A4 /* parrot.bmp */,
+				889CBAE3186DCF200038F4A4 /* libX11.6.dylib */,
 				889CB8CB186DAD090038F4A4 /* EllipseDetection */,
 				889CB8CA186DAD090038F4A4 /* Products */,
 			);
@@ -60,7 +69,8 @@
 		889CB8CB186DAD090038F4A4 /* EllipseDetection */ = {
 			isa = PBXGroup;
 			children = (
-				889CB8CC186DAD090038F4A4 /* main.cpp */,
+				88C0F667187E83660005983D /* main.cpp */,
+				889CBAE2186DB04B0038F4A4 /* CImg.h */,
 				889CB8CE186DAD090038F4A4 /* EllipseDetection.1 */,
 			);
 			path = EllipseDetection;
@@ -117,7 +127,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				889CB8CD186DAD090038F4A4 /* main.cpp in Sources */,
+				88C0F668187E83660005983D /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +205,16 @@
 		889CB8D3186DAD090038F4A4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/X11/include,
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/opt/X11/lib,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -202,6 +222,16 @@
 		889CB8D4186DAD090038F4A4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/X11/include,
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/opt/X11/lib,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -225,6 +255,7 @@
 				889CB8D4186DAD090038F4A4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
