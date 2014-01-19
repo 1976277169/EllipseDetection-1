@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "ax == 1"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "248"
+            endingLineNumber = "248"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411865397.511804"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "248"
+                  endingLineNumber = "248"
+                  offsetFromSymbolStart = "4090">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411865397.512169"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "248"
+                  endingLineNumber = "248"
+                  offsetFromSymbolStart = "4137">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "245"
+            endingLineNumber = "245"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "ax &gt; 0.5 &amp;&amp; ax &lt; 1.5"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "236"
+            endingLineNumber = "236"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411582393.47022"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "184"
+                  endingLineNumber = "184"
+                  offsetFromSymbolStart = "2628">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411582393.470604"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "184"
+                  endingLineNumber = "184"
+                  offsetFromSymbolStart = "2738">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411863100.398853"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "227"
+            endingLineNumber = "227"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "theta2 &gt; 0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "213"
+            endingLineNumber = "213"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, int*)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411575123.296509"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "136"
+                  endingLineNumber = "136"
+                  offsetFromSymbolStart = "573">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, int*)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411575123.296884"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "136"
+                  endingLineNumber = "136"
+                  offsetFromSymbolStart = "861">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "189"
+            endingLineNumber = "189"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "193"
+            endingLineNumber = "193"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "179"
+            endingLineNumber = "179"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "174"
+            endingLineNumber = "174"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, int*)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411579037.093641"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "120"
+                  endingLineNumber = "120"
+                  offsetFromSymbolStart = "728">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, int*)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411579037.094071"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "120"
+                  endingLineNumber = "120"
+                  offsetFromSymbolStart = "759">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "177"
+            endingLineNumber = "177"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "215"
+            endingLineNumber = "215"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, int*)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411579623.597573"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "157"
+                  endingLineNumber = "157"
+                  offsetFromSymbolStart = "1856">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, int*)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411579623.598017"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "157"
+                  endingLineNumber = "157"
+                  offsetFromSymbolStart = "1879">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "297"
+            endingLineNumber = "297"
+            landmarkName = "main(int argc,char **argv)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "302"
+            endingLineNumber = "302"
+            landmarkName = "main(int argc,char **argv)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "294"
+            endingLineNumber = "294"
+            landmarkName = "main(int argc,char **argv)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "241"
+            endingLineNumber = "241"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411582705.637902"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "185"
+                  endingLineNumber = "185"
+                  offsetFromSymbolStart = "2771">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411582705.638558"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "185"
+                  endingLineNumber = "185"
+                  offsetFromSymbolStart = "2825">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411582705.638986"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "185"
+                  endingLineNumber = "185"
+                  offsetFromSymbolStart = "2860">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "303"
+            endingLineNumber = "303"
+            landmarkName = "main(int argc,char **argv)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "211"
+            endingLineNumber = "211"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411650109.24304"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "187"
+                  endingLineNumber = "187"
+                  offsetFromSymbolStart = "2230">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411650109.243376"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "187"
+                  endingLineNumber = "187"
+                  offsetFromSymbolStart = "2312">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "300"
+            endingLineNumber = "300"
+            landmarkName = "main(int argc,char **argv)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "194"
+            endingLineNumber = "194"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "x1 == 217 &amp;&amp; y1 == 125"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "162"
+            endingLineNumber = "162"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "202"
+            endingLineNumber = "202"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411851924.627246"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "179"
+                  endingLineNumber = "179"
+                  offsetFromSymbolStart = "1995">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411851924.627472"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "179"
+                  endingLineNumber = "179"
+                  offsetFromSymbolStart = "2028">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "158"
+            endingLineNumber = "158"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "161"
+            endingLineNumber = "161"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
+            landmarkName = "EllipseAccumulator(CImg&lt;&gt; ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "121"
+            endingLineNumber = "121"
+            landmarkName = "EllipseAccumulator(CImg&lt;&gt; ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
+            landmarkName = "EllipseAccumulator(CImg&lt;&gt; ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt; Histo)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861714.54429"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
+            landmarkName = "EllipseAccumulator(CImg&lt;&gt; ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "EllipseAccumulator(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411860297.077069"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "63"
+                  endingLineNumber = "63"
+                  offsetFromSymbolStart = "287">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "EllipseAccumulator(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411860297.07836"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "63"
+                  endingLineNumber = "63"
+                  offsetFromSymbolStart = "311">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            condition = "y1==1"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861003.769877"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
+            landmarkName = "EllipseAccumulator(CImg&lt;&gt; ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "EllipseAccumulator(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411860265.539809"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "59"
+                  endingLineNumber = "59"
+                  offsetFromSymbolStart = "222">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "EllipseAccumulator(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411860265.540447"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "59"
+                  endingLineNumber = "59"
+                  offsetFromSymbolStart = "1882">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "EllipseAccumulator(cimg_library::CImg&lt;float&gt;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411860265.54093"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "59"
+                  endingLineNumber = "59"
+                  offsetFromSymbolStart = "1909">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411861999.622689"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "149"
+            endingLineNumber = "149"
+            landmarkName = "AccumulateKN(CImg&lt;&gt; &amp;ImgIn, CImg&lt;&gt; &amp;Acc1, CImg&lt;&gt; &amp;Acc2, vector&lt;unsigned long&gt;&amp; Histo)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411861999.6247"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "154"
+                  endingLineNumber = "154"
+                  offsetFromSymbolStart = "426">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "AccumulateKN(cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, cimg_library::CImg&lt;float&gt;&amp;, std::__1::vector&lt;unsigned long, std::__1::allocator&lt;unsigned long&gt; &gt;&amp;)"
+                  moduleName = "EllipseMerged"
+                  urlString = "file:///Users/rubcuevas/Desktop/Algorithmie%20de%20l&apos;image/EllipseDetection/EllipseMerged/main.cpp"
+                  timestampString = "411861999.624997"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "154"
+                  endingLineNumber = "154"
+                  offsetFromSymbolStart = "4447">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "main.cpp"
+            timestampString = "411864846.24931"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "305"
+            endingLineNumber = "305"
+            landmarkName = "main(int argc,char **argv)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
