@@ -44,6 +44,7 @@ int maxHisto(vector<unsigned long> &v){
     return index;
     
 }
+/*
 void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long> Histo)
 {
 
@@ -55,7 +56,7 @@ void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigne
 
 	cimg_forXY(module, x1, y1)
 	{
-        std::cout <<y1 << std::endl;
+        
 	
         cimg_forXY(module, x2, y2)
         {
@@ -86,7 +87,7 @@ void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigne
             
             if (abs(m1-m2) > DEGREES_TO_RADIANS(10)) {
                 
-                int xp, yp;
+                //int xp, yp;
                 int xm = (x1+x2)/2, ym = (y1+y2)/2;
                 
                 float xt = ((xv*xw)/(yv*xw - yw*xv)) * (y2-y1 + x1*(yv/xv) - x2*(yw/xw));
@@ -96,14 +97,14 @@ void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigne
                     continue;
                 
                 // Calcul de P
-                /*
+ 
                 for (xp = xm; xp < xt; xp++) {
                     yp = ym + (xp-xm)*(yt-ym)/(xt-xm);
                     //std::cout << xp << " " << yp << std::endl;
                     if(module(xp,yp) > DETECT)
                         break;
                 }
-                */
+ 
                 int b0 = 0;
                 
                 // Variation de a0
@@ -135,7 +136,80 @@ void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigne
     
 
 }
-
+*/
+void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long> Histo)
+{
+    
+	Acc1.fill(0);
+	Acc2.fill(0);
+    
+	CImg<> module = Module(ImgIn);
+	CImgList<> grad = ImgIn.get_gradient("xy", 3);
+    
+	cimg_forXY(module, x1, y1)
+	{
+        
+        cimg_forXY(module, x2, y2)
+        {
+            if(y2-y1 + x2-x1 < 25)
+                continue;
+            
+            // Initialization
+            float xv = -grad.at(1)(x1, y1);
+            float yv = grad.at(0)(x1, y1);
+            float xw = -grad.at(1)(x2, y2);
+            float yw = grad.at(0)(x2, y2);
+            
+            int Y = y2 - y1;
+            int X = x2 - x1;
+            float m1 = -xv/yv;
+            float m2 = -xw/yw;
+            float M1 = m1 * m2;
+            float M2 = m1 + m2;
+            
+            if ( module(x1, y1) > DETECT && module(x2, y2) > DETECT && abs(m1-m2) > 10) {
+                
+                int xp, yp;
+                int xm = (x1+x2)/2, ym = (y1+y2)/2;
+                
+                float xt = ((xv*xw)/(yv*xw - yw*xv)) * (y2-y1 + x1*(yv/xv) - x2*(yw/xw));
+                float yt = y1 + (xt - x1) * (yv/xv);
+                
+                if (xt < 0 || xt >= module.width() || yt < 0 || yt >= module.height())
+                    continue;
+                
+                // Calcul de P
+                for (xp = xm; xp < xt; xp++) {
+                    yp = ym + (xp-xm)*(yt-ym)/(xt-xm);
+                    //std::cout << xp << " " << yp << std::endl;
+                    if(module(xp,yp) > DETECT)
+                        break;
+                }
+                
+                int b0 = 0;
+                
+                // Variation de a0
+                for (int a0 = 0; a0 < module.width(); ++a0)
+                {
+                    
+                    // Acc1 value
+                    //b0 = ( ( a0 - xp ) * ( (2*M1*X) - (Y*M2) ) / (X*M2 - 2*Y) ) + yp;
+                    b0 = (a0 - xm) * ((yt-ym)/(xt-xm)) + ym;
+                    
+                    if (b0 >= module.height() || b0 < 0)
+                        continue;
+                    
+                    Acc1(a0, b0) += 1;
+                    
+                }
+                
+            }
+            
+        }
+        
+    }
+    
+}
 void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long>& Histo){
      CImg<> module(ImgIn.width(), ImgIn.height());
     module = Module(ImgIn);
@@ -158,10 +232,12 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                 if(module(x2,y2) > 0){
                     ////
                     if(sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) > 25){
+                        
                     float xv = -grad[1](x1, y1);
                     float yv = grad[0](x1, y1);
                     float xw = -grad[1](x2, y2);
                     float yw = grad[0](x2, y2);
+                    
                     float slope1 = -xv/yv;
                     float slope2 = -xw/yw;
                     float theta1 = tan(slope1);
@@ -178,19 +254,21 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
     //float t2 = (slope1*slope2*(x2-x1) - y2*slope1 + y1*slope2) / (slope2-slope1);
     float m1 = (x1 + x2) / 2;
     float m2 = (y1 + y2) / 2;
-    float slope = (t2-m2) / (t1-m1);
-    float b = (m2*t1 - m1*t2) / (t1-m1);
+    //float slope = (t2-m2) / (t1-m1);
+    //float b = (m2*t1 - m1*t2) / (t1-m1);
     float xp, yp; // Coordinates of P
     
-    float dp, d2p, M1, M2, X, Y, K, N, phi1, phi2, x0, y0;
+            float dp, d2p, M1, M2, X, Y, K, N, phi1, phi2, x0, y0, NSquared;
     int ax;
     //cimg_forXY(Acc1, a0, b0){
         //Revise condition!
-     //   if(Acc1(a0,b0) > 100){
+        //if(Acc1(a0,b0) > 100){
             //Calculate point P
-            int a0 = 200;
-            int b0 = 200;
+            int a0 = 199;
+            int b0 = 199;
+           // X = x2 - x1;
             X = x2 - x1;
+           // Y = y2 - y1;
             Y = y2 - y1;
             dp = Y/X;
             //M1 = slope1 * slope2;
@@ -210,29 +288,40 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
            // yp = d2p*xp -d2p*a0 + b0;
             xp = (d2p*a0 - b0)/(d2p - tan(anglepp));
             yp = xp*tan(anglepp);
-                if(xp >= 0 && xp < ImgIn.width() && yp >= 0 && yp <= ImgIn.height() && module(xp, yp) > 0   ){
+                if(xp >= 0 && xp < ImgIn.width() && yp >= 0 && yp <= ImgIn.height()  ){
                     //Calculate parameters
                     phi1 = atan2(Y,X);
-                    phi2 = atan2((2*M1*X - Y*M2),(X*M2 - 2*Y));
+                    //phi2 = atan2((2*M1*X - Y*M2),(X*M2 - 2*Y));
+                    phi2 = atan(d2p);
                     if(phi1 < 0)
                         phi1 = -phi1;
                     if(phi2 < 0)
-                        phi2 = -phi2;
+                        phi2 += 2*M_PI;
                     //Generate ro
-                    for(int ro = 0; ro < 180; ro++){
-                        //if(ro == 90){
-                          //  ro += 10;
-                            //continue;
-                    //}
+                    for(int ro = 0; ro < 90; ro++){
                         float radians = DEGREES_TO_RADIANS(ro);
-                        N = sqrt(abs(tan(phi1 - radians) - tan(phi2 - radians)));
+                        float angleparam1 = phi1 - radians;
+                        float angleparam2 = phi2 - radians;
+                        if(angleparam1 < 0)
+                            angleparam1 += 2*M_PI;
+                        if(angleparam2 < 0)
+                            angleparam2 += 2*M_PI;
+                        float param1 = tan(angleparam1);
+                        float param2 = tan(angleparam2);
+                        
+                        NSquared = param1 * param2;
+                        if(NSquared < 0)
+                            continue;
                         K = tan(radians);
-                        x0 = ((xp - a0)/(sqrt(K*K + 1))) + ((yp - b0)*K)/sqrt(K*K + 1);
-                        y0 = (((xp - a0) * K) /(((sqrt(K*K + 1))) + (yp - b0))/sqrt(K*K + 1));
+                        x0 = ((xp - a0)/(sqrt(K*K + 1))) + ((yp - b0)*K)/(sqrt(K*K + 1));
+                        y0 = ((((xp - a0) * K) /((sqrt(K*K + 1))) + ((yp - b0))/sqrt(K*K + 1)));
                         if(xp >= 0 && xp < ImgIn.width() && yp >= 0 && yp <= ImgIn.height()){
-                            float divi = sqrt((y0*y0 + x0*x0*N*N));
-                            float divis = sqrt(((N*N)*(1+K*K)));
-                            ax = floor(divi/divis + 0.5f);
+                            float divi = y0*y0 + x0*x0*NSquared;
+                            float divis = (NSquared)*(1+K*K);
+                            if(divi/divis < 0)
+                                continue;
+                            ax = floor(sqrt(divi/divis) + 0.5f);
+                            N = sqrt(NSquared);
                             int atanN = atan(N);
                             if(atanN < 0)
                                 atanN = atanN + 2*M_PI;
@@ -240,9 +329,10 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                             
                            // int atanN = floor(RADIANS_TO_DEGREES(atan(N)) + 0.5f);
                             //int atanK = floor(RADIANS_TO_DEGREES(atan(K)) + 0.5f);
-                           
+                           if(ax < 0)
+                               ax = -ax;
                             if(ax > 0 && ax < ImgIn.width()/2){
-                                    Acc2(ro, atanN)  += 1;
+                                    Acc2(atanN, ro)  += 1;
                             
                             
                                     ++Histo[ax];
@@ -269,6 +359,7 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
 
 
 
+
 /*******************************************************************************
 
                                     Main
@@ -287,10 +378,14 @@ int main(int argc,char **argv)
     
     // Accumulator Computation
     CImg<> Acc1(img.width(), img.height());
-    CImg<> Acc2(180, 360);
-    std::vector<unsigned long> Histo(img.width());
+    CImg<> Acc2(360, 360);
+    std::vector<unsigned long> Histo(img.width()/2);
     
     //EllipseAccumulator(img, Acc1, Acc2, Histo);
+    unsigned long Acc1Values[Acc1.width()][Acc1.height()];
+    for(int i = 0; i < Acc1.width(); ++i)
+        for(int j = 0; j < Acc1.height(); ++j)
+            Acc1Values[i][j] = Acc1(i,j);
     AccumulateKN(img, Acc1, Acc2, Histo);
     
     // Display
