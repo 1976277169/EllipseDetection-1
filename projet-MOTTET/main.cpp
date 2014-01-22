@@ -126,6 +126,7 @@ void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, int* Histo)
 *******************************************************************************/
 int main(int argc,char **argv)
 {
+    
     cimg_usage("Retrieve command line arguments");
     const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseDetection/ellipse.bmp","Input image file");
     
@@ -164,4 +165,6 @@ int main(int argc,char **argv)
         
     }
     return 0;
+     
+    
 }

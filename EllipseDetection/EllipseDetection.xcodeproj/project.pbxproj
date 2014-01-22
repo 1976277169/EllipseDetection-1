@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		884C41F2187E8DE00058316F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 884C41F1187E8DE00058316F /* main.cpp */; };
 		884C41F4187E8DE00058316F /* EllipseDetection.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 884C41F3187E8DE00058316F /* EllipseDetection.1 */; };
+		884C41FB187E8EA50058316F /* libX11.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 884C41FA187E8EA50058316F /* libX11.6.dylib */; };
+		884C41FE187E8EC90058316F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 884C41FD187E8EC90058316F /* main.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +27,11 @@
 
 /* Begin PBXFileReference section */
 		884C41EE187E8DE00058316F /* EllipseDetection */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EllipseDetection; sourceTree = BUILT_PRODUCTS_DIR; };
-		884C41F1187E8DE00058316F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		884C41F3187E8DE00058316F /* EllipseDetection.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = EllipseDetection.1; sourceTree = "<group>"; };
+		884C41FA187E8EA50058316F /* libX11.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libX11.6.dylib; path = ../../../../../../opt/local/lib/libX11.6.dylib; sourceTree = "<group>"; };
+		884C41FC187E8EC90058316F /* ellipse.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = ellipse.bmp; sourceTree = "<group>"; };
+		884C41FD187E8EC90058316F /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
+		884C41FF187E8EDF0058316F /* CImg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CImg.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				884C41FB187E8EA50058316F /* libX11.6.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +49,9 @@
 		884C41E5187E8DE00058316F = {
 			isa = PBXGroup;
 			children = (
+				884C41FF187E8EDF0058316F /* CImg.h */,
+				884C41FC187E8EC90058316F /* ellipse.bmp */,
+				884C41FA187E8EA50058316F /* libX11.6.dylib */,
 				884C41F0187E8DE00058316F /* EllipseDetection */,
 				884C41EF187E8DE00058316F /* Products */,
 			);
@@ -60,7 +68,7 @@
 		884C41F0187E8DE00058316F /* EllipseDetection */ = {
 			isa = PBXGroup;
 			children = (
-				884C41F1187E8DE00058316F /* main.cpp */,
+				884C41FD187E8EC90058316F /* main.cpp */,
 				884C41F3187E8DE00058316F /* EllipseDetection.1 */,
 			);
 			path = EllipseDetection;
@@ -117,7 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				884C41F2187E8DE00058316F /* main.cpp in Sources */,
+				884C41FE187E8EC90058316F /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +203,15 @@
 		884C41F8187E8DE00058316F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/X11/include,
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -202,6 +219,15 @@
 		884C41F9187E8DE00058316F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/X11/include,
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
