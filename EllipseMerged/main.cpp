@@ -15,6 +15,50 @@ using namespace std;
 
 const unsigned char col1[3]={255,255,0}, col2[3]={0,0,0}, col3[3]={255,0,0}, col4[3]={0,255,0};
 
+int maxHisto(vector<unsigned long> &v){
+    unsigned long max = v.at(0);
+    int index = 0;
+    for(int i = 0; i < v.size(); ++i){
+        if(v.at(i) > max){
+            max = v.at(i);
+            index = i;
+        }
+    }
+    return index;
+    
+}
+void MaxAccKN(CImg<> &Acc, int& atanK, int& atanN){
+
+    int max = -1;
+    cimg_forXY(Acc, x, y){
+        if(Acc(x,y) > max){
+            max = Acc(x,y);
+            atanK = x;
+            atanN = y;
+        }
+    }
+}
+
+void DrawEllipse(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long> &Histo){
+    int a0 = 200;
+    int b0 = 200;
+    int a,b;
+    int ax = maxHisto(Histo);
+    int ay, by, bx;
+    int atanK, atanN, K, N;
+    MaxAccKN(Acc2, atanK, atanN);
+    K = tan(atanK);
+    N = tan(atanN);
+    ay = K*ax;
+    by = N*ax;
+    bx = -ay*-by /ax;
+    a = sqrt(ax*ax + ay*ay);
+    b = sqrt(bx*bx+by*by);
+   
+    unsigned char purple[] = { 233,0,125 };
+    ImgIn.draw_ellipse(a0, b0, a, b, DEGREES_TO_RADIANS(atanK),purple,1);
+}
+
 CImg<> Module (CImg<> image)
 {
 	//CImgList<float> list = image.get_gradient("xy", 0);
@@ -32,18 +76,7 @@ CImg<> Module (CImg<> image)
   
 }
 
-int maxHisto(vector<unsigned long> &v){
-    unsigned long max = v.at(0);
-    int index = 0;
-    for(int i = 0; i < v.size(); ++i){
-        if(v.at(i) > max){
-            max = v.at(i);
-            index = i;
-        }
-    }
-    return index;
-    
-}
+
 /*
 void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long> Histo)
 {
@@ -153,7 +186,7 @@ void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigne
         {
             if(y2-y1 + x2-x1 < 25)
                 continue;
-            
+           
             // Initialization
             float xv = -grad.at(1)(x1, y1);
             float yv = grad.at(0)(x1, y1);
@@ -177,6 +210,7 @@ void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigne
                 
                 if (xt < 0 || xt >= module.width() || yt < 0 || yt >= module.height())
                     continue;
+               
                 
                 // Calcul de P
                 for (xp = xm; xp < xt; xp++) {
@@ -210,6 +244,17 @@ void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigne
     }
     
 }
+void checkAngle(float& angle){
+    if(angle > 2*M_PI){
+        angle = std::fmod(angle, 2*M_PI);
+    }
+    else if(angle < 0){
+        if(angle < -2*M_PI)
+            angle = std::fmod(angle, 2*M_PI);
+        angle += 2*M_PI;
+    }
+    
+}
 void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long>& Histo){
      CImg<> module(ImgIn.width(), ImgIn.height());
     module = Module(ImgIn);
@@ -217,12 +262,11 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
     //CImg<> tangent = ImgIn.get_tan();
     //CImg<> tangent = module.get_tan();
     //cimg_forXY(module, x1, y1){
+    int a0 = 200;
+    int b0 = 200;
     for(int x1 = 0; x1 < module.width(); ++x1){
         for(int y1 = 0; y1 < module.height(); ++y1){
           if(module(x1,y1) > 0){
-            //float theta1 = tangent(x1,y1);
-            //float slope1 = tan(theta1);
-           // cimg_forXY(module,x2,y2)
               
               
               for(int x2 = 0; x2 < module.width(); ++x2){
@@ -233,131 +277,69 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                     ////
                     if(sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) > 25){
                         
-                    float xv = -grad[1](x1, y1);
-                    float yv = grad[0](x1, y1);
-                    float xw = -grad[1](x2, y2);
-                    float yw = grad[0](x2, y2);
-                    
-                    float slope1 = -xv/yv;
-                    float slope2 = -xw/yw;
-                    float theta1 = tan(slope1);
-                    float theta2 = tan(slope2);
-                    float t1 = ((xv*xw)/(yv*xw - yw*xv)) * (y2-y1 + x1*(yv/xv) - x2*(yw/xw));
-                    float t2 = y1 + (t1 - x1) * (yv/xv);
-                    
-                ////
-                //float theta2 = tangent(x2,y2);
-                //float slope2 = tan(theta2);
-        if(abs((tan(theta1) - tan(theta2))) > DEGREES_TO_RADIANS(10)){
-    
-    //float t1 = (y1 - y2 - x1*slope1 + x2*slope2) / (slope2-slope1);
-    //float t2 = (slope1*slope2*(x2-x1) - y2*slope1 + y1*slope2) / (slope2-slope1);
-    float m1 = (x1 + x2) / 2;
-    float m2 = (y1 + y2) / 2;
-    //float slope = (t2-m2) / (t1-m1);
-    //float b = (m2*t1 - m1*t2) / (t1-m1);
-    float xp, yp; // Coordinates of P
-    
-            float dp, d2p, M1, M2, X, Y, K, N, phi1, phi2, x0, y0, NSquared;
-    int ax;
-    //cimg_forXY(Acc1, a0, b0){
-        //Revise condition!
-        //if(Acc1(a0,b0) > 100){
-            //Calculate point P
-            int a0 = 199;
-            int b0 = 199;
-           // X = x2 - x1;
-            X = x2 - x1;
-           // Y = y2 - y1;
-            Y = y2 - y1;
-            dp = Y/X;
-            //M1 = slope1 * slope2;
-            //M2 = slope1 + slope2;
-            M1 = tan(theta1) * tan(theta2);
-            M2 = tan(theta1) + tan(theta2);
-            d2p = (2*M1*X - Y*M2)/(X*M2 - 2*Y);
-           //Calculer p
-            
-            float anglep1 = atan2(y1,x1);
-            float anglep2 = atan2(y2,x2);
-            float anglepp = (anglep1 + anglep2)/2;
-            
-            
-            
-           // xp = (d2p*a0 - b0) / (d2p - tan((theta1 + theta2) / 2));
-           // yp = d2p*xp -d2p*a0 + b0;
-            xp = (d2p*a0 - b0)/(d2p - tan(anglepp));
-            yp = xp*tan(anglepp);
-                if(xp >= 0 && xp < ImgIn.width() && yp >= 0 && yp <= ImgIn.height()  ){
-                    //Calculate parameters
-                    phi1 = atan2(Y,X);
-                    //phi2 = atan2((2*M1*X - Y*M2),(X*M2 - 2*Y));
-                    phi2 = atan(d2p);
-                    if(phi1 < 0)
-                        phi1 = -phi1;
-                    if(phi2 < 0)
-                        phi2 += 2*M_PI;
-                    //Generate ro
-                    for(int ro = 0; ro < 90; ro++){
-                        float radians = DEGREES_TO_RADIANS(ro);
-                        float angleparam1 = phi1 - radians;
-                        float angleparam2 = phi2 - radians;
-                        if(angleparam1 < 0)
-                            angleparam1 += 2*M_PI;
-                        if(angleparam2 < 0)
-                            angleparam2 += 2*M_PI;
-                        float param1 = tan(angleparam1);
-                        float param2 = tan(angleparam2);
-                        
-                        NSquared = param1 * param2;
-                        if(NSquared < 0)
+                        float X = x2 - x1;
+                        float Y = y2 - y1;
+                        float angleFirstDerivativeP1 = atan2(grad[1](x1,y1),grad[0](x1,y1));
+                        if(angleFirstDerivativeP1 < 0)
+                            angleFirstDerivativeP1 = -angleFirstDerivativeP1;
+                        float angleFirstDerivativeP2 = atan2(grad[1](x2,y2),grad[0](x2,y2));
+                        if(angleFirstDerivativeP2 < 0)
+                            angleFirstDerivativeP2 = -angleFirstDerivativeP2;
+                        float m1 = tan(angleFirstDerivativeP1);
+                        float m2 = tan(angleFirstDerivativeP2);
+                        if(abs(m1 -m2) < DEGREES_TO_RADIANS(10))
                             continue;
-                        K = tan(radians);
-                        x0 = ((xp - a0)/(sqrt(K*K + 1))) + ((yp - b0)*K)/(sqrt(K*K + 1));
-                        y0 = ((((xp - a0) * K) /((sqrt(K*K + 1))) + ((yp - b0))/sqrt(K*K + 1)));
-                        if(xp >= 0 && xp < ImgIn.width() && yp >= 0 && yp <= ImgIn.height()){
-                            float divi = y0*y0 + x0*x0*NSquared;
-                            float divis = (NSquared)*(1+K*K);
-                            if(divi/divis < 0)
-                                continue;
-                            ax = floor(sqrt(divi/divis) + 0.5f);
-                            N = sqrt(NSquared);
-                            int atanN = atan(N);
-                            if(atanN < 0)
-                                atanN = atanN + 2*M_PI;
-                            atanN = RADIANS_TO_DEGREES(atanN);
-                            
-                           // int atanN = floor(RADIANS_TO_DEGREES(atan(N)) + 0.5f);
-                            //int atanK = floor(RADIANS_TO_DEGREES(atan(K)) + 0.5f);
-                           if(ax < 0)
-                               ax = -ax;
-                            if(ax > 0 && ax < ImgIn.width()/2){
-                                    Acc2(atanN, ro)  += 1;
-                            
-                            
-                                    ++Histo[ax];
+                        
+                        float M1 = m1 * m2;
+                        float M2 = m1 + m2;
+                        float angleFirstDerivativeP = Y/X;
+                        checkAngle(angleFirstDerivativeP);
+                        float angleSecondDerivativeP = ((2*M1*X) - (Y*M2)) / ((X*M2 - 2*Y));
+                        checkAngle(angleSecondDerivativeP);
+                        
+                        float phi1 = atan(angleFirstDerivativeP);
+                        checkAngle(phi1);
+                        float phi2 = atan(angleSecondDerivativeP);
+                        checkAngle(phi2);
+                        float ro;
+                        float N, K, x0, y0, ax;
+                        int xp, yp;
+                        for(xp = a0;xp < module.width(); ++xp){
+                             yp = angleSecondDerivativeP * (xp - a0) + b0;
+                            if(yp < module.height()){
                                 
-                                ImgIn.draw_point(xp, yp, col1, 0.01);
+                               
+                            if(module(xp, yp) > 0){
+                            for(int i = 0; i < 180; ++i){
+                                ro = DEGREES_TO_RADIANS(i);
+                                checkAngle(ro);
+                                K = tan(ro);
+                                if(K < 0) K = -K;
+                                
+                                N = sqrt(abs(tan(phi1 - ro)*tan(phi2 - ro)));
+                                x0 = ((xp - a0)/(sqrt(K*K + 1)) + ((yp - b0)*K)/sqrt(K*K+1));
+                                y0 = ((xp - a0)*K)/(sqrt(K*K+1))+((yp - b0)/(sqrt(K*K + 1)));
+                                ax = sqrt(abs((y0*y0 + x0*x0*N*N)/(N*N*(1+K*K))));
+                                int atanN = atan(N);
+                                checkAngle(N);
+                                Acc2(i, atanN);
+                                ++Histo[ax];
+                        }
                             }
                         }
+                        }
                     }
-                
-            }
-            }
                 }
-            //}
+            }
+              }
+          }
         }
-                }
+    }
+    }
+
+
+                
         
-    }
-    }
-}
-}
-}
-
-
-
-
 
 
 /*******************************************************************************
@@ -389,10 +371,13 @@ int main(int argc,char **argv)
     AccumulateKN(img, Acc1, Acc2, Histo);
     
     // Display
+    CImg<> result(img.width(), img.height());
     CImgDisplay dispSpatial(img,"Input Image");
     CImgDisplay acc1Spatial(Acc1,"Accumulator 1 map");
     CImgDisplay acc2Spatial(Acc2,"Accumulator 2 map");
+    CImgDisplay resultSpatial(result, "Result");
     int maxH = maxHisto(Histo);
+    DrawEllipse(img, Acc1, Acc2, Histo);
     
     while (!dispSpatial.is_closed() && !acc1Spatial.is_closed() && !acc2Spatial.is_closed())
     {
