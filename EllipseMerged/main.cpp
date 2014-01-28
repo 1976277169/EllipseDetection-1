@@ -53,6 +53,15 @@ int maxHisto(vector<unsigned long> &v){
     return index;
     
 }
+void MaxAccCenter(CImg<> &Acc, int& a0, int& b0){
+    long max = -1;
+    cimg_forXY(Acc,x,y)
+    if(Acc(x, y) > max){
+        max = Acc(x,y);
+        a0 = x;
+        b0 =y;
+    }
+}
 void MaxAccKN(CImg<> &Acc, int& atanK, int& atanN){
     
     int max = -1;
@@ -321,11 +330,11 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
     CImg<> phase(ImgIn.width(), ImgIn.height());
     phase = Phase(ImgIn);
     CImgList<> grad = ImgIn.get_gradient("xy", 3);
+    int a0, b0;
+    MaxAccCenter(Acc1, a0, b0);
+ 
     
-  //cimg_forXY(Acc1, a0,b0)
-    //if(Acc1(a0,b0) > 0)
-    int a0 = 198;
-    int b0 = 199;
+    
         cimg_forXY(module, x1, y1)
             if(module(x1, y1) > 0) //There is an edge point
                 cimg_forXY(module, x2, y2)
@@ -435,12 +444,12 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
 int main(int argc,char **argv)
 {
     cimg_usage("Retrieve command line arguments");
-    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled.bmp","Input image file");
+    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipse.bmp","Input image file");
     
-    const int minA = 13;
-    const int maxA = 18;
-    const int minB = 27;
-    const int maxB = 32;
+    const int minA = 30;
+    const int maxA = 60;
+    const int minB = 80;
+    const int maxB = 100;
     // Opening of filename
     CImg<> img(filename);
     
@@ -452,7 +461,7 @@ int main(int argc,char **argv)
     CImg<> Acc2(180, 180);
     std::vector<unsigned long> Histo(img.width()/2);
     
-   // EllipseAccumulator(img, Acc1, Acc2, Histo);
+    EllipseAccumulator(img, Acc1, Acc2, Histo);
     CImg<> Acc1Thresholded(Acc1.width(), Acc1.height());
     MaxDetection(Acc1, Acc1Thresholded);
     AccumulateKN(img, Acc1Thresholded, Acc2, Histo, minA, maxA, minB, maxB);
@@ -507,7 +516,7 @@ int main(int argc,char **argv)
     std::cout << "** Valeur de 200, 200 Acc1Thresholded: "<< Acc1Thresholded(200,200) << std::endl;
     MaxDetection(Acc2, Acc2Thresholded);
     CImgDisplay Acc2ThresholdedSpatial(Acc2Thresholded, "Acc2 Thresholded");
-    DrawEllipse(img, Acc1, Acc2Thresholded, Histo);
+    DrawEllipse(img, Acc1Thresholded, Acc2Thresholded, Histo);
     
     while (!dispSpatial.is_closed() && !acc1Spatial.is_closed() && !acc2Spatial.is_closed())
     {
