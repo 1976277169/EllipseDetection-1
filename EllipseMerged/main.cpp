@@ -399,28 +399,26 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                     //Equation 4: y = slopeSecondDerivativeP*(x - a0) + b0
                     //Find xp -> Find yp
                     float mt = (ym-yt)/(xm-xt);
-                    xp = ((-mt)*(xt) - b0 + yt + slopeSecondDerivativeP*a0)/(slopeSecondDerivativeP - mt);
-                    yp = slopeSecondDerivativeP*(xp - a0) + b0;
-                    //for(xp = 0; xp < ImgIn.width(); ++xp){
-                      //  yp = floor(slopeSecondDerivativeP*(xp - a0) + b0 +0.5f);
-                        if(xp >0 && xp < ImgIn.width() && yp > 0 && yp < ImgIn.height() && module(xp, yp) > 0){
+                    xp = floor(((-mt)*(xt) - b0 + yt + slopeSecondDerivativeP*a0)/(slopeSecondDerivativeP - mt)+0.5f);
+                    yp = floor(slopeSecondDerivativeP*(xp - a0) + b0 +0.5f);
+                    if(xp >0 && xp < ImgIn.width() && yp > 0 && yp < ImgIn.height() && module(xp, yp) > 0){
                             phi1 = atan2(Y,X);
                             //phi2 = atan2(2*M1*X - Y*M2, X*M2-2*Y);
                             phi2 = atan((2*M1*X - Y*M2)/(X*M2-2*Y));
                           
                           
                            // ro = phase(xp, yp);
-                            for(int i = 0; i < 180; i+=5){
+                            for(float i = 0; i < 180; i+=0.1){
                                 ro = DEGREES_TO_RADIANS(i);
                             
-                         //   if(abs(ro-90) <= margin || abs(ro-DEGREES_TO_RADIANS(270)) <= margin) continue;
+                            if(abs(ro-90) <= margin || abs(ro-DEGREES_TO_RADIANS(270)) <= margin) continue;
                                 if(i == 0 || i == 90 ) continue;
                             if(abs((phi1-ro)-DEGREES_TO_RADIANS(90)) <= margin || abs((phi1-ro)-DEGREES_TO_RADIANS(270)) <= margin || abs((phi2-ro) - DEGREES_TO_RADIANS(90)) <= margin || abs((phi2-ro)-DEGREES_TO_RADIANS(270)) <= margin) continue;
                                 N = sqrt(abs(tan(phi1 - ro)*tan(phi2 - ro)));
                                 K = tan(ro);
                                 x0 = (xp - a0)/sqrt(K*K+1) + ((yp - b0)*K)/sqrt(K*K+1);
                                 y0 = ((xp - a0)*K)/sqrt(K*K+1) + (yp - b0)/sqrt(K*K+1);
-                                if((x0 + a0) > 0 && (x0 + a0) < ImgIn.width() && (y0 + b0) > 0 && (y0 +b0) < ImgIn.height() && module(x0+a0, y0 + b0) > 0){
+                                //if((x0 + a0) > 0 && (x0 + a0) < ImgIn.width() && (y0 + b0) > 0 && (y0 +b0) < ImgIn.height() && module(x0+a0, y0 + b0) > 0){
                                 ax = sqrt(abs((y0*y0 + x0*x0*N*N)/(N*N*(1 + K*K))));
                                 if(ax <= margin) continue;
                                         ay = K*ax;
@@ -428,16 +426,16 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                                         bx = -ay*by/ax;
                                         a = sqrt(ax*ax + ay*ay);
                                         b = sqrt(bx*bx + by*by);
-                                        if(a > minA && a < maxA && b > minB && b < maxB){
+                                        if(a >= minA && a <= maxA && b >= minB && b <= maxB){
                                             atanN = RADIANS_TO_DEGREES(atan(N));
                                             if(atanN < 0)
                                                 atanN +=360;
                                             
                                             
-                                            Acc2(i, atanN) += 1;
-                                            std::cout << "Added to Acc2:" << i << ", " << atanN << std::endl;
+                                            Acc2(floor(i + 0.5f), floor(atanN+0.5f)) += 1;
+                                            std::cout << "Added to Acc2:" << floor(i + 0.5f) << ", " << floor(atanN+0.5f) << std::endl;
                                             ++Histo[floor(ax+0.5f)];
-                                            std::cout << "Added ax: " << ax << std::endl;
+                                            std::cout << "Added ax: " << floor(ax+0.5f) << std::endl;
                                             
                                         }
                                 }
@@ -446,7 +444,7 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                         }
                             }
                         }
-}
+//}
 
 
 
@@ -470,9 +468,9 @@ int main(int argc,char **argv)
     cimg_usage("Retrieve command line arguments");
     const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled.bmp","Input image file");
     
-    const int minA = 12;
-    const int maxA = 17;
-    const int minB = 28;
+    const int minA = 13;
+    const int maxA = 18;
+    const int minB = 27;
     const int maxB = 32;
     // Opening of filename
     CImg<> img(filename);
