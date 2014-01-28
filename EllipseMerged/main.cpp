@@ -351,6 +351,8 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
     module = Module(ImgIn);
     CImg<> phase(ImgIn.width(), ImgIn.height());
     phase = Phase(ImgIn);
+    CImgList<> grad = ImgIn.get_gradient("xy", 3);
+    
    // CImgList<> grad = ImgIn.get_gradient("xy", 3);
     int a0 = 200;
     int b0 = 200;
@@ -359,19 +361,27 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
         if(module(x1, y1) > 0) //There is an edge point
             cimg_forXY(module, x2, y2)
             if(module(x2, y2) > 0 && sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) > 25){
-                angleDerivativeP1 = phase(x1, y1);
-                if(angleDerivativeP1 < 0)
-                angleDerivativeP2 = phase(x2, y2);
-                if(angleDerivativeP2 < 0)
+                // Initialization
+                float xv = -grad.at(1)(x1, y1);
+                float yv = grad.at(0)(x1, y1);
+                float xw = -grad.at(1)(x2, y2);
+                float yw = grad.at(0)(x2, y2);
+                
+                float m1 = -xv/yv;
+                float m2 = -xw/yw;
+                angleDerivativeP1 = atan2(yv, -xv);
+                angleDerivativeP2 = atan2(yw, -xw);
+               
                 
                 if(abs(angleDerivativeP1-DEGREES_TO_RADIANS(90)) < margin || abs(angleDerivativeP1 - DEGREES_TO_RADIANS(270)) < margin || abs(angleDerivativeP2-DEGREES_TO_RADIANS(90)) < margin || abs(angleDerivativeP2 - DEGREES_TO_RADIANS(270)) < margin) continue;
-                m1 = tan(angleDerivativeP1);
-                m2 = tan(angleDerivativeP2);
+                
+                
+              
                 
                 if(abs(m1-m2) > DEGREES_TO_RADIANS(10)){
                     X = x2 - x1;
                     Y = y2 - y1;
-                    //(X,Y) -> Polar
+                    
                     
                     if(X==0)
                         continue;
@@ -381,11 +391,22 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                     slopeSecondDerivativeP = (2*M1*X - Y*M2)/divisor;
                     M1 = m1*m2;
                     M2 = m1+m2;
-                    for(xp = 0; xp < ImgIn.width(); ++xp){
-                        yp = floor(slopeSecondDerivativeP*(xp - a0) + b0 +0.5f);
-                        if(yp > 0 && yp < ImgIn.height() && module(xp, yp) > 0){
+                    int xm = (x1+x2)/2, ym = (y1+y2)/2;
+                    
+                    float xt = ((xv*xw)/(yv*xw - yw*xv)) * (y2-y1 + x1*(yv/xv) - x2*(yw/xw));
+                    float yt = y1 + (xt - x1) * (yv/xv);
+                    //Line MT: y - yt = ((ym-yt)/(xm-xt))*(x - xt)
+                    //Equation 4: y = slopeSecondDerivativeP*(x - a0) + b0
+                    //Find xp -> Find yp
+                    float mt = (ym-yt)/(xm-xt);
+                    xp = ((-mt)*(xt) - b0 + yt + slopeSecondDerivativeP*a0)/(slopeSecondDerivativeP - mt);
+                    yp = slopeSecondDerivativeP*(xp - a0) + b0;
+                    //for(xp = 0; xp < ImgIn.width(); ++xp){
+                      //  yp = floor(slopeSecondDerivativeP*(xp - a0) + b0 +0.5f);
+                        if(xp >0 && xp < ImgIn.width() && yp > 0 && yp < ImgIn.height() && module(xp, yp) > 0){
                             phi1 = atan2(Y,X);
-                            phi2 = atan2(2*M1*X - Y*M2, X*M2-2*Y);
+                            //phi2 = atan2(2*M1*X - Y*M2, X*M2-2*Y);
+                            phi2 = atan((2*M1*X - Y*M2)/(X*M2-2*Y));
                           
                           
                            // ro = phase(xp, yp);
@@ -407,15 +428,16 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                                         bx = -ay*by/ax;
                                         a = sqrt(ax*ax + ay*ay);
                                         b = sqrt(bx*bx + by*by);
-                                        if((ay + b0) < ImgIn.height() && (ax + a0) < ImgIn.width() && a > minA && a < maxA && b > minB && b < maxB){
+                                        if(a > minA && a < maxA && b > minB && b < maxB){
                                             atanN = RADIANS_TO_DEGREES(atan(N));
                                             if(atanN < 0)
-                                                atanN +=180;
+                                                atanN +=360;
                                             
                                             
                                             Acc2(i, atanN) += 1;
+                                            std::cout << "Added to Acc2:" << i << ", " << atanN << std::endl;
                                             ++Histo[floor(ax+0.5f)];
-                                            
+                                            std::cout << "Added ax: " << ax << std::endl;
                                             
                                         }
                                 }
@@ -424,8 +446,8 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                         }
                             }
                         }
-            }
 }
+
 
 
 
@@ -448,10 +470,10 @@ int main(int argc,char **argv)
     cimg_usage("Retrieve command line arguments");
     const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled.bmp","Input image file");
     
-    const int minA = 20;
-    const int maxA = 80;
-    const int minB = 40;
-    const int maxB = 200;
+    const int minA = 12;
+    const int maxA = 17;
+    const int minB = 28;
+    const int maxB = 32;
     // Opening of filename
     CImg<> img(filename);
     
@@ -478,8 +500,8 @@ int main(int argc,char **argv)
     CImgDisplay resultSpatial(result, "Result");
     int maxH = maxHisto(Histo);
     CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
-    MaxDetection(Acc2, Acc2Thresholded);
-    DrawEllipse(result, Acc1, Acc2Thresholded, Histo);
+    //MaxDetection(Acc2, Acc2Thresholded);
+    DrawEllipse(result, Acc1, Acc2, Histo);
     
     while (!dispSpatial.is_closed() && !acc1Spatial.is_closed() && !acc2Spatial.is_closed())
     {
