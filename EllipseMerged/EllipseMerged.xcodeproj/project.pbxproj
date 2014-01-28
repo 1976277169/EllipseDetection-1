@@ -33,6 +33,12 @@
 		8816097818881F5200812106 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = "<group>"; };
 		8816097A18881FFE00812106 /* libX11.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libX11.6.dylib; path = ../../../../../../opt/local/lib/libX11.6.dylib; sourceTree = "<group>"; };
 		8816097C18884E3E00812106 /* ellipse2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = ellipse2.bmp; sourceTree = SOURCE_ROOT; };
+		88604F6E1891547300D2E1DD /* ellipse3.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = ellipse3.bmp; sourceTree = "<group>"; };
+		88604F6F1891596800D2E1DD /* ellipse7.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = ellipse7.bmp; path = reellipsedetection/ellipse7.bmp; sourceTree = SOURCE_ROOT; };
+		88604F701891596800D2E1DD /* ellipse9.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = ellipse9.bmp; path = reellipsedetection/ellipse9.bmp; sourceTree = SOURCE_ROOT; };
+		88604F711891596800D2E1DD /* ellipse10.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = ellipse10.bmp; path = reellipsedetection/ellipse10.bmp; sourceTree = SOURCE_ROOT; };
+		88EA1F451895593500B87A47 /* ellipsemini2.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = ellipsemini2.bmp; sourceTree = SOURCE_ROOT; };
+		88EA1F471895647D00B87A47 /* ellipsemini602.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = ellipsemini602.bmp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +56,8 @@
 		8816096118881F2600812106 = {
 			isa = PBXGroup;
 			children = (
+				88EA1F471895647D00B87A47 /* ellipsemini602.bmp */,
+				88604F6E1891547300D2E1DD /* ellipse3.bmp */,
 				8816097A18881FFE00812106 /* libX11.6.dylib */,
 				8816097618881F5200812106 /* CImg.h */,
 				8816097718881F5200812106 /* ellipse.bmp */,
@@ -70,6 +78,10 @@
 			isa = PBXGroup;
 			children = (
 				8816097818881F5200812106 /* main.cpp */,
+				88EA1F451895593500B87A47 /* ellipsemini2.bmp */,
+				88604F6F1891596800D2E1DD /* ellipse7.bmp */,
+				88604F701891596800D2E1DD /* ellipse9.bmp */,
+				88604F711891596800D2E1DD /* ellipse10.bmp */,
 				8816097C18884E3E00812106 /* ellipse2.bmp */,
 				8816096F18881F2600812106 /* EllipseMerged.1 */,
 			);
