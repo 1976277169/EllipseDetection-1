@@ -74,6 +74,34 @@ void MaxAccKN(CImg<> &Acc, int& atanK, int& atanN){
             }
         }
 }
+float proportion_ellipse(CImg<>& ImgIn, float a0, float b0,float a, float b, float angle, float min_dist ){
+    float count= 0.0;
+    float perimeter;
+    int x1, y1, x2, y2;
+    cimg_forXY(ImgIn, x, y)
+    if(ImgIn(x,y) > 0){
+        float theta = DEGREES_TO_RADIANS(angle);
+        x1 = x - a0;
+        y1 = y - b0;
+        x2 = x1*cos(theta) + y1*sin(theta);
+        y2 = -x1*sin(theta) + y1*cos(theta);
+        
+        x2 /= a;
+        y2 /= b;
+        if (abs((1.0 - (x2*x2 + y2*y2))) < min_dist)
+        {
+            count++;
+        }
+    }
+    
+    
+    
+    
+    perimeter = M_PI * ( 3*(a+b) - sqrt((a+3*b)*(3*a+b)) ) * 2;
+    return count/perimeter;
+    
+    
+}
 
 void checkAngle(float& angle){
    
@@ -92,7 +120,8 @@ void checkAngle(float& angle){
 }
 
 void DrawEllipse(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long> &Histo){
-    
+    float min_ellipse_proportion = 0.2;
+    float a_over_b;
     int a,b, a0,b0;
     int ax = maxHisto(Histo);
     float ay, by, bx;
@@ -109,10 +138,29 @@ void DrawEllipse(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long
     bx = -ay*by /ax;
     a = sqrt(ax*ax + ay*ay);
     b = sqrt(bx*bx+by*by);
-    
-    
     unsigned char purple[] = { 233,100,125 };
-    ImgIn.draw_ellipse(a0, b0, a, b,atanK,purple,1,1);
+    if(a > 0 && b > 0){
+    ///////
+    float proportion = proportion_ellipse(ImgIn, a0,b0, a, b, atanK, 5);
+    if(a != 0 && b != 0){
+        if(a > b){
+            a_over_b = ((float)a) / (float)b;
+        } else {
+            a_over_b = ((float)b) / ((float)a);
+        }
+    } else {
+        a_over_b = 0;
+    }
+    //if ( (proportion > min_ellipse_proportion) && (a >= min_ellipse/2.0 && b >= min_ellipse/2.0 ) && a_over_b >= 1.50 )
+    if ( (proportion > min_ellipse_proportion)  && a_over_b >= 1.20 )
+         ImgIn.draw_ellipse(a0, b0, a, b,atanK,purple,1,1);
+    
+    
+    /////
+    
+    }
+    
+   
 }
 
 CImg<> Module (CImg<> image)
@@ -385,7 +433,7 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                               
                               
                             
-                                for(float i = 0; i < 180; i+=0.1){
+                                for(float i = 0; i < 180; i+=1){
                                     ro = DEGREES_TO_RADIANS(i);
                                 
                                 if(abs(ro-DEGREES_TO_RADIANS(90)) <= margin || abs(ro-DEGREES_TO_RADIANS(270)) <= margin) continue;
@@ -395,9 +443,10 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                                     K = tan(ro);
                                     x0 = floor((xp - a0)/sqrt(K*K+1) + ((yp - b0)*K)/sqrt(K*K+1) + 0.5f);
                                     y0 = floor(((xp - a0)*K)/sqrt(K*K+1) + (yp - b0)/sqrt(K*K+1) +0.5f);
-                                    if(abs((x0 + a0)-xp) < 8 && abs((y0 +b0)-yp) < 8){
+                                    if(sqrt((x0+a0-xp)*(x0+a0-xp)+(y0+b0-yp)*(y0+b0-yp))<= 5){
                                         ax = sqrt(abs((y0*y0 + x0*x0*N*N)/(N*N*(1 + K*K))));
-                                        if(ax <= margin) continue;
+                                        if(ax <= margin)
+                                            continue;
                                                 ay = K*ax;
                                                 by = N*ax;
                                                 bx = -ay*by/ax;
@@ -421,7 +470,8 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                                 }
                                 }
                             }
-    }
+                }
+    
 
 
 
@@ -443,12 +493,12 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
 int main(int argc,char **argv)
 {
     cimg_usage("Retrieve command line arguments");
-    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipse2.bmp","Input image file");
+    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled.bmp","Input image file");
     
     const int minA = 30;
-    const int maxA = 130;
-    const int minB = 70;
-    const int maxB = 200;
+    const int maxA = 50;
+    const int minB = 54;
+    const int maxB = 70;
     // Opening of filename
     CImg<> img(filename);
     
@@ -470,13 +520,11 @@ int main(int argc,char **argv)
    
     CImgDisplay acc1Spatial(Acc1,"Accumulator 1 map");
     CImgDisplay acc2Spatial(Acc2,"Accumulator 2 map");
-     CImgDisplay dispSpatial(img,"Input Image");
-    
-   // CImgDisplay resultSpatial(result, "Result");
-   // int maxH = maxHisto(Histo);
+    CImgDisplay dispSpatial(img,"Input Image");
     CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
     CImgDisplay acc1ThresholdedSpatial(Acc1Thresholded, "Acc1 Thresholded");
-
+    CImg<> module = Module(img);
+    CImgDisplay moduleImgSpatial(module, "Module");
     MaxDetection(Acc2, Acc2Thresholded);
     CImgDisplay Acc2ThresholdedSpatial(Acc2Thresholded, "Acc2 Thresholded");
     DrawEllipse(img, Acc1Thresholded, Acc2Thresholded, Histo);
