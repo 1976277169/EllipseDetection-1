@@ -93,14 +93,13 @@ void checkAngle(float& angle){
 
 void DrawEllipse(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long> &Histo){
     
-    int a0 = 200;
-    int b0 = 200;
-    int a,b;
+    int a,b, a0,b0;
     int ax = maxHisto(Histo);
     float ay, by, bx;
     int atanK, atanN;
     float K, N,atanKrad, atanNrad;
     MaxAccKN(Acc2, atanK, atanN);
+    MaxAccCenter(Acc1, a0, b0);
     atanKrad = DEGREES_TO_RADIANS(atanK);
     atanNrad = DEGREES_TO_RADIANS(atanN);
     K = tan(atanKrad);
@@ -389,7 +388,7 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                                 for(float i = 0; i < 180; i+=0.1){
                                     ro = DEGREES_TO_RADIANS(i);
                                 
-                                if(abs(ro-90) <= margin || abs(ro-DEGREES_TO_RADIANS(270)) <= margin) continue;
+                                if(abs(ro-DEGREES_TO_RADIANS(90)) <= margin || abs(ro-DEGREES_TO_RADIANS(270)) <= margin) continue;
                                     if(i == 0 || i == 90 ) continue;
                                 if(abs((phi1-ro)-DEGREES_TO_RADIANS(90)) <= margin || abs((phi1-ro)-DEGREES_TO_RADIANS(270)) <= margin || abs((phi2-ro) - DEGREES_TO_RADIANS(90)) <= margin || abs((phi2-ro)-DEGREES_TO_RADIANS(270)) <= margin) continue;
                                     N = sqrt(abs(tan(phi1 - ro)*tan(phi2 - ro)));
@@ -444,12 +443,12 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
 int main(int argc,char **argv)
 {
     cimg_usage("Retrieve command line arguments");
-    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipse.bmp","Input image file");
+    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipse2.bmp","Input image file");
     
     const int minA = 30;
-    const int maxA = 60;
-    const int minB = 80;
-    const int maxB = 100;
+    const int maxA = 130;
+    const int minB = 70;
+    const int maxB = 200;
     // Opening of filename
     CImg<> img(filename);
     
@@ -476,44 +475,8 @@ int main(int argc,char **argv)
    // CImgDisplay resultSpatial(result, "Result");
    // int maxH = maxHisto(Histo);
     CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
-    //MaxDetection(Acc2, Acc2Thresholded);
-      CImgDisplay acc1ThresholdedSpatial(Acc1Thresholded, "Acc1 Thresholded");
-    cimg_forXY(Acc1Thresholded, x, y){
-        if(Acc1Thresholded(x,y) == 0)
-            std::cout << x << ", " << y << ":" << Acc1Thresholded(x,y) << std::endl;
-    }
-    long max = -1;
-    int maxX = -1;
-    int maxY = -1;
-    cimg_forXY(Acc1, x, y){
-        
-        if(Acc1(x,y) > max){
-            max = Acc1(x,y);
-            maxX = x;
-            maxY = y;
-        }
-    }
-    std::cout << "Max of Acc1:" << maxX << "," << maxY << ":" << max << std::endl;
-    
-    std::cout << "** Valeur de 200, 200 Acc1:" << Acc1(200,200) << std::endl;
-    std::cout << "** Valeur de 200, 200 Acc1Thresholded: "<< Acc1Thresholded(200,200) << std::endl;
-    max = -1;
-    maxX = -1;
-    maxY = -1;
-    cimg_forXY(Acc1Thresholded, x, y){
-        
-        if(Acc1Thresholded(x,y) > max){
-            max = Acc1Thresholded(x,y);
-            maxX = x;
-            maxY = y;
-        }
-    }
-    
-    
-    std::cout << "Max of Acc1Thresholded:" << maxX << "," << maxY << ":" << max << std::endl;
-    
-    std::cout << "** Valeur de 200, 200 Acc1:" << Acc1(200,200) << std::endl;
-    std::cout << "** Valeur de 200, 200 Acc1Thresholded: "<< Acc1Thresholded(200,200) << std::endl;
+    CImgDisplay acc1ThresholdedSpatial(Acc1Thresholded, "Acc1 Thresholded");
+
     MaxDetection(Acc2, Acc2Thresholded);
     CImgDisplay Acc2ThresholdedSpatial(Acc2Thresholded, "Acc2 Thresholded");
     DrawEllipse(img, Acc1Thresholded, Acc2Thresholded, Histo);
