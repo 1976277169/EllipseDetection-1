@@ -39,7 +39,71 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
     }
 }
 
+ void findLocalMax(CImg<> Acc, CImg<> &Out, int min_local_max_value, float sample_proportion_for_local_max, int x_max, int y_max){
+     Out.fill(0);
+    int count;
+    int i, j;
+    cimg_forXY(Acc,x,y){
+        if(Acc(x,y) == -1)
+            continue;
+        
+        int x_c = x + Acc.width()/2;
+        int y_c = y + Acc.height()/2;
+        int val_c = Acc(x_c,y_c);
+        
+        if(val_c < min_local_max_value)
+            continue;
+        
+        bool max_value_flag = true;
+        float average_value = 0;
+        int num_tests = (int )(Acc.height() * Acc. width() * sample_proportion_for_local_max);
+        for(count = 0; count < num_tests; ++count){
+            i = (int )(drand48() * (float )Acc.width());
+            j = (int )(drand48() * (float )Acc.height());
+            if(Acc(i+x, j+y) > val_c){
+                max_value_flag = false;
+                break;
+                
+            }
+            else{
+                average_value += (float) Acc(i+x, j+i);
+                
+            }
+            
+            //Biggest value?
+            average_value /= (float )num_tests;
+            if(((float) val_c) < (2.0*average_value))
+                continue;
+            
+            //Is it a local maxima?
+            max_value_flag = true;
+            cimg_forXY(Acc, i, j)
+                if(Acc(i+x,j+y) > val_c)
+                {
+                    max_value_flag = false;
+                    break;
+                }
+            if(max_value_flag == false)
+                continue;
+            
+            //Here we have a local maxima
+            Out(x_c, y_c) = 255;
+            
+            /* To stop us finding another local maximum near
+             * this one, we will mark all histogram entries
+             * in the window by setting them to -1.
+             */
+            for (i=x; i < Acc.width(); ++i)
+                for (j=y; j < y+Acc.height(); ++j)
+                    Acc(i,j) = -1;
 
+            
+            
+            
+        }
+        
+    }
+}
 
 int maxHisto(vector<unsigned long> &v){
     unsigned long max = v.at(0);
