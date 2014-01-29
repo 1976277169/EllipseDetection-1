@@ -39,7 +39,7 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
     }
 }
 
- void findLocalMax(CImg<> Acc, CImg<> &Out, int min_local_max_value, float sample_proportion_for_local_max, int x_max, int y_max){
+ void findLocalMax(CImg<> Acc, CImg<> &Out, unsigned long long min_local_max_value, float sample_proportion_for_local_max){
      Out.fill(0);
     int count;
     int i, j;
@@ -47,9 +47,9 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
         if(Acc(x,y) == -1)
             continue;
         
-        int x_c = x + Acc.width()/2;
-        int y_c = y + Acc.height()/2;
-        int val_c = Acc(x_c,y_c);
+        int x_c = x/2;
+        int y_c = y/2;
+        unsigned long long val_c = Acc(x_c,y_c);
         
         if(val_c < min_local_max_value)
             continue;
@@ -60,7 +60,7 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
         for(count = 0; count < num_tests; ++count){
             i = (int )(drand48() * (float )Acc.width());
             j = (int )(drand48() * (float )Acc.height());
-            if(Acc(i+x, j+y) > val_c){
+            if(Acc(i, j) > val_c){
                 max_value_flag = false;
                 break;
                 
@@ -78,7 +78,7 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
             //Is it a local maxima?
             max_value_flag = true;
             cimg_forXY(Acc, i, j)
-                if(Acc(i+x,j+y) > val_c)
+                if(Acc(i,j) > val_c)
                 {
                     max_value_flag = false;
                     break;
@@ -87,18 +87,16 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
                 continue;
             
             //Here we have a local maxima
-            Out(x_c, y_c) = 255;
+            Out(x_c, y_c) = Acc(x_c, y_c);
             
             /* To stop us finding another local maximum near
              * this one, we will mark all histogram entries
              * in the window by setting them to -1.
              */
             for (i=x; i < Acc.width(); ++i)
-                for (j=y; j < y+Acc.height(); ++j)
+                for (j=y; j < Acc.height(); ++j)
                     Acc(i,j) = -1;
-
-            
-            
+ 
             
         }
         
@@ -245,100 +243,6 @@ CImg<> Module (CImg<> image)
 }
 
 
-/*
- void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long> Histo)
- {
- 
- Acc1.fill(0);
- Acc2.fill(0);
- 
- CImg<> module = Module(ImgIn);
- CImgList<> grad = ImgIn.get_gradient("xy", 3);
- 
- cimg_forXY(module, x1, y1)
- {
- 
- 
- cimg_forXY(module, x2, y2)
- {
- 
- 
- //if(y2-y1 + x2-x1 < 25)
- //  continue;
- if(sqrt(x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) > 25){
- 
- // Initialization
- float xv = -grad.at(1)(x1, y1);
- float yv = grad.at(0)(x1, y1);
- float xw = -grad.at(1)(x2, y2);
- float yw = grad.at(0)(x2, y2);
- 
- int Y = y2 - y1;
- int X = x2 - x1;
- // float m1 = -xv/yv;
- //float m2 = -xw/yw;
- float slope1 = -xv/yv;
- float slope2 = -xw/yw;
- float theta1 = tan(slope1);
- float theta2 = tan(slope2);
- float m1 = tan(theta1);
- float m2 = tan(theta2);
- float M1 = m1 * m2;
- float M2 = m1 + m2;
- 
- if (abs(m1-m2) > DEGREES_TO_RADIANS(10)) {
- 
- //int xp, yp;
- int xm = (x1+x2)/2, ym = (y1+y2)/2;
- 
- float xt = ((xv*xw)/(yv*xw - yw*xv)) * (y2-y1 + x1*(yv/xv) - x2*(yw/xw));
- float yt = y1 + (xt - x1) * (yv/xv);
- 
- if (xt < 0 || xt >= module.width() || yt < 0 || yt >= module.height())
- continue;
- 
- // Calcul de P
- 
- for (xp = xm; xp < xt; xp++) {
- yp = ym + (xp-xm)*(yt-ym)/(xt-xm);
- //std::cout << xp << " " << yp << std::endl;
- if(module(xp,yp) > DETECT)
- break;
- }
- 
- int b0 = 0;
- 
- // Variation de a0
- for (int a0 = 0; a0 < module.width(); ++a0)
- {
- 
- // Acc1 value
- //b0 = ( ( a0 - xp ) * ( (2*M1*X) - (Y*M2) ) / (X*M2 - 2*Y) ) + yp;
- b0 = (a0 - xm) * ((yt-ym)/(xt-xm)) + ym;
- 
- if (b0 >= module.height() || b0 < 0)
- continue;
- 
- Acc1(a0, b0) += 1;
- 
- }
- //FIN CENTRES
- 
- 
- 
- 
- 
- }
- 
- }
- 
- }
- }
- 
- 
- }
- */
-
 /******************************************
  Calcul de la phase du gradient de l'image imageIn
  ******************************************/
@@ -441,100 +345,104 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
     CImg<> phase(ImgIn.width(), ImgIn.height());
     phase = Phase(ImgIn);
     CImgList<> grad = ImgIn.get_gradient("xy", 3);
-    int a0, b0;
-    MaxAccCenter(Acc1, a0, b0);
+  
+    
  
     
-    
-        cimg_forXY(module, x1, y1)
-            if(module(x1, y1) > 0) //There is an edge point
-                cimg_forXY(module, x2, y2)
-                if(module(x2, y2) > 0 && sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) > 25 && abs(x2 - x1) > 10 ){
-                    // Initialization
-                    float xv = -grad.at(1)(x1, y1);
-                    float yv = grad.at(0)(x1, y1);
-                    float xw = -grad.at(1)(x2, y2);
-                    float yw = grad.at(0)(x2, y2);
-                    
-                    float m1 = -xv/yv;
-                    float m2 = -xw/yw;
-                    angleDerivativeP1 = atan2(yv, -xv);
-                    angleDerivativeP2 = atan2(yw, -xw);
-                   
-                    
-                    if(abs(angleDerivativeP1-DEGREES_TO_RADIANS(90)) < margin || abs(angleDerivativeP1 - DEGREES_TO_RADIANS(270)) < margin || abs(angleDerivativeP2-DEGREES_TO_RADIANS(90)) < margin || abs(angleDerivativeP2 - DEGREES_TO_RADIANS(270)) < margin) continue;
-                    
-                    
-                  
-                    
-                    if(abs(m1-m2) > DEGREES_TO_RADIANS(10)){
-                        X = x2 - x1;
-                        Y = y2 - y1;
+    cimg_forXY(Acc1, a0, b0)
+        if(Acc1(a0,b0) > 0)
+            cimg_forXY(module, x1, y1)
+                if(module(x1, y1) > 0) //There is an edge point
+                    cimg_forXY(module, x2, y2)
+                    if(module(x2, y2) > 0 && sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)) > 25 && abs(x2 - x1) > 10 ){
+                        // Initialization
+                        float xv = -grad.at(1)(x1, y1);
+                        float yv = grad.at(0)(x1, y1);
+                        float xw = -grad.at(1)(x2, y2);
+                        float yw = grad.at(0)(x2, y2);
+                        
+                        float m1 = -xv/yv;
+                        float m2 = -xw/yw;
+                        angleDerivativeP1 = atan2(yv, -xv);
+                        angleDerivativeP2 = atan2(yw, -xw);
+                       
+                        
+                        if(abs(angleDerivativeP1-DEGREES_TO_RADIANS(90)) < margin || abs(angleDerivativeP1 - DEGREES_TO_RADIANS(270)) < margin || abs(angleDerivativeP2-DEGREES_TO_RADIANS(90)) < margin || abs(angleDerivativeP2 - DEGREES_TO_RADIANS(270)) < margin) continue;
                         
                         
-                        if(X==0)
-                            continue;
-                        slopeFirstDerivativeP = Y/X;
-                        float divisor = (X*M2-2*Y);
-                        if(divisor <= margin) continue;
-                        slopeSecondDerivativeP = (2*M1*X - Y*M2)/divisor;
-                        M1 = m1*m2;
-                        M2 = m1+m2;
-                        int xm = (x1+x2)/2, ym = (y1+y2)/2;
+                      
                         
-                        float xt = ((xv*xw)/(yv*xw - yw*xv)) * (y2-y1 + x1*(yv/xv) - x2*(yw/xw));
-                        float yt = y1 + (xt - x1) * (yv/xv);
-                        //Line MT: y - yt = ((ym-yt)/(xm-xt))*(x - xt)
-                        //Equation 4: y = slopeSecondDerivativeP*(x - a0) + b0
-                        //Find xp -> Find yp
-                        float mt = (ym-yt)/(xm-xt);
-                        xp = floor(((-mt)*(xt) - b0 + yt + slopeSecondDerivativeP*a0)/(slopeSecondDerivativeP - mt)+0.5f);
-                        yp = floor(slopeSecondDerivativeP*(xp - a0) + b0 +0.5f);
-                        if(xp >0 && xp < ImgIn.width() && yp > 0 && yp < ImgIn.height() && module(xp, yp) > 0){
-                                phi1 = atan2(Y,X);
-                               
-                                phi2 = atan((2*M1*X - Y*M2)/(X*M2-2*Y));
-                              
-                              
+                        if(abs(m1-m2) > DEGREES_TO_RADIANS(10)){
+                            X = x2 - x1;
+                            Y = y2 - y1;
                             
-                                for(float i = 0; i < 180; i+=1){
-                                    ro = DEGREES_TO_RADIANS(i);
+                            
+                            if(X==0)
+                                continue;
+                            slopeFirstDerivativeP = Y/X;
+                            float divisor = (X*M2-2*Y);
+                            if(divisor <= margin) continue;
+                            slopeSecondDerivativeP = (2*M1*X - Y*M2)/divisor;
+                            M1 = m1*m2;
+                            M2 = m1+m2;
+                            int xm = (x1+x2)/2, ym = (y1+y2)/2;
+                            
+                            float xt = ((xv*xw)/(yv*xw - yw*xv)) * (y2-y1 + x1*(yv/xv) - x2*(yw/xw));
+                            float yt = y1 + (xt - x1) * (yv/xv);
+                            //Line MT: y - yt = ((ym-yt)/(xm-xt))*(x - xt)
+                            //Equation 4: y = slopeSecondDerivativeP*(x - a0) + b0
+                            //Find xp -> Find yp
+                            float mt = (ym-yt)/(xm-xt);
+                            xp = floor(((-mt)*(xt) - b0 + yt + slopeSecondDerivativeP*a0)/(slopeSecondDerivativeP - mt)+0.5f);
+                            yp = floor(slopeSecondDerivativeP*(xp - a0) + b0 +0.5f);
+                            if(xp >0 && xp < ImgIn.width() && yp > 0 && yp < ImgIn.height() && module(xp, yp) > 0){
+                                    phi1 = atan2(Y,X);
+                                   
+                                    phi2 = atan((2*M1*X - Y*M2)/(X*M2-2*Y));
+                                  
+                                  
                                 
-                                if(abs(ro-DEGREES_TO_RADIANS(90)) <= margin || abs(ro-DEGREES_TO_RADIANS(270)) <= margin) continue;
-                                    if(i == 0 || i == 90 ) continue;
-                                if(abs((phi1-ro)-DEGREES_TO_RADIANS(90)) <= margin || abs((phi1-ro)-DEGREES_TO_RADIANS(270)) <= margin || abs((phi2-ro) - DEGREES_TO_RADIANS(90)) <= margin || abs((phi2-ro)-DEGREES_TO_RADIANS(270)) <= margin) continue;
-                                    N = sqrt(abs(tan(phi1 - ro)*tan(phi2 - ro)));
-                                    K = tan(ro);
-                                    x0 = floor((xp - a0)/sqrt(K*K+1) + ((yp - b0)*K)/sqrt(K*K+1) + 0.5f);
-                                    y0 = floor(((xp - a0)*K)/sqrt(K*K+1) + (yp - b0)/sqrt(K*K+1) +0.5f);
-                                    if(sqrt((x0+a0-xp)*(x0+a0-xp)+(y0+b0-yp)*(y0+b0-yp))<= 5){
-                                        ax = sqrt(abs((y0*y0 + x0*x0*N*N)/(N*N*(1 + K*K))));
-                                        if(ax <= margin)
-                                            continue;
-                                                ay = K*ax;
-                                                by = N*ax;
-                                                bx = -ay*by/ax;
-                                                a = sqrt(ax*ax + ay*ay);
-                                                b = sqrt(bx*bx + by*by);
-                                                if(abs(ax + a0) < module.width() && abs(ay + b0) < module.height() && a >= minA && a <= maxA && b >= minB && b <= maxB){
-                                                    atanN = RADIANS_TO_DEGREES(atan(N));
-                                                    if(atanN < 0)
-                                                        atanN +=360;
-                                                    
-                                                    
-                                                    Acc2(floor(i + 0.5f), floor(atanN+0.5f)) += 1;
-                                                    std::cout << "Added to Acc2:" << floor(i + 0.5f) << ", " << floor(atanN+0.5f) << std::endl;
-                                                    ++Histo[floor(ax+0.5f)];
-                                                    std::cout << "Added ax: " << floor(ax+0.5f) << std::endl;
-                                                    
-                                                }
-                                        }
+                                    for(float i = 0; i < 180; i+=1){
+                                        ro = DEGREES_TO_RADIANS(i);
+                                    
+                                    if(abs(ro-DEGREES_TO_RADIANS(90)) <= margin || abs(ro-DEGREES_TO_RADIANS(270)) <= margin) continue;
+                                        if(i == 0 || i == 90 ) continue;
+                                    if(abs((phi1-ro)-DEGREES_TO_RADIANS(90)) <= margin || abs((phi1-ro)-DEGREES_TO_RADIANS(270)) <= margin || abs((phi2-ro) - DEGREES_TO_RADIANS(90)) <= margin || abs((phi2-ro)-DEGREES_TO_RADIANS(270)) <= margin) continue;
+                                        N = sqrt(abs(tan(phi1 - ro)*tan(phi2 - ro)));
+                                        K = tan(ro);
+                                        x0 = floor((xp - a0)/sqrt(K*K+1) + ((yp - b0)*K)/sqrt(K*K+1) + 0.5f);
+                                        y0 = floor(((xp - a0)*K)/sqrt(K*K+1) + (yp - b0)/sqrt(K*K+1) +0.5f);
+                                        if(sqrt((x0+a0-xp)*(x0+a0-xp)+(y0+b0-yp)*(y0+b0-yp))<= 5){
+                                            ax = sqrt(abs((y0*y0 + x0*x0*N*N)/(N*N*(1 + K*K))));
+                                            if(ax <= margin)
+                                                continue;
+                                                    ay = K*ax;
+                                                    by = N*ax;
+                                                    bx = -ay*by/ax;
+                                                    a = sqrt(ax*ax + ay*ay);
+                                                    b = sqrt(bx*bx + by*by);
+                                                    if(abs(ax + a0) < module.width() && abs(ay + b0) < module.height() && a >= minA && a <= maxA && b >= minB && b <= maxB){
+                                                        atanN = RADIANS_TO_DEGREES(atan(N));
+                                                        if(atanN < 0)
+                                                            atanN +=360;
+                                                        
+                                                        
+                                                        Acc2(floor(i + 0.5f), floor(atanN+0.5f)) += 1;
+                                                        std::cout << "Added to Acc2:" << floor(i + 0.5f) << ", " << floor(atanN+0.5f) << std::endl;
+                                                        ++Histo[floor(ax+0.5f)];
+                                                        std::cout << "Added ax: " << floor(ax+0.5f) << std::endl;
+                                                        
+                                                    }
+                                            }
+                                    }
+                                    
+                                    }
+                                    }
                                 }
-                                
-                                }
-                                }
-                            }
-                }
+    
+    
+    
+}
     
 
 
@@ -542,7 +450,7 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
 
 
 
-    
+
 
 
     
@@ -559,10 +467,10 @@ int main(int argc,char **argv)
     cimg_usage("Retrieve command line arguments");
     const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled.bmp","Input image file");
     
-    const int minA = 30;
-    const int maxA = 50;
-    const int minB = 54;
-    const int maxB = 70;
+    const int minA = 13;
+    const int maxA = 17;
+    const int minB = 27;
+    const int maxB = 34;
     // Opening of filename
     CImg<> img(filename);
     
@@ -577,7 +485,17 @@ int main(int argc,char **argv)
     EllipseAccumulator(img, Acc1, Acc2, Histo);
     CImg<> Acc1Thresholded(Acc1.width(), Acc1.height());
     MaxDetection(Acc1, Acc1Thresholded);
-    AccumulateKN(img, Acc1Thresholded, Acc2, Histo, minA, maxA, minB, maxB);
+    CImg<> localMaxCenter(Acc1Thresholded.width(), Acc1Thresholded.height());
+    unsigned long long sum = 0;
+    cimg_forXY(Acc1Thresholded, x,y){
+        sum += Acc1Thresholded(x,y);
+    }
+    sum /=(Acc1Thresholded.width() + Acc1Thresholded.height());
+    findLocalMax(Acc1Thresholded, localMaxCenter, sum, 0.1);
+    CImgDisplay localMaxCenterSpatial(localMaxCenter, "Local Max Center");
+    AccumulateKN(img, localMaxCenter, Acc2, Histo, minA, maxA, minB, maxB);
+    CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
+    MaxDetection(Acc2, Acc2Thresholded);
     
     // Display
     CImg<> result(img.width(), img.height());
@@ -585,11 +503,11 @@ int main(int argc,char **argv)
     CImgDisplay acc1Spatial(Acc1,"Accumulator 1 map");
     CImgDisplay acc2Spatial(Acc2,"Accumulator 2 map");
     CImgDisplay dispSpatial(img,"Input Image");
-    CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
+    
     CImgDisplay acc1ThresholdedSpatial(Acc1Thresholded, "Acc1 Thresholded");
     CImg<> module = Module(img);
     CImgDisplay moduleImgSpatial(module, "Module");
-    MaxDetection(Acc2, Acc2Thresholded);
+   
     CImgDisplay Acc2ThresholdedSpatial(Acc2Thresholded, "Acc2 Thresholded");
     DrawEllipse(img, Acc1Thresholded, Acc2Thresholded, Histo);
     
