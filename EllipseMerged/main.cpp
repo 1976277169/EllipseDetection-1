@@ -6,6 +6,8 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <algorithm>
+
 
 #define DETECT 20
 
@@ -15,6 +17,51 @@ using namespace std;
 #define RADIANS_TO_DEGREES(radians) (radians*180/M_PI)
 
 const unsigned char col1[3]={255,255,0}, col2[3]={0,0,0}, col3[3]={255,0,0}, col4[3]={0,255,0};
+typedef struct center_point_type {
+    int a0, b0;
+    center_point_type() = default;
+    center_point_type(const int& x, const int& y) : a0(x), b0(y){}
+    
+} CENTER;
+
+typedef struct angles_type {
+    float atanK, atanN;
+    angles_type() = default;
+    angles_type(const int& angleK, const int& angleN) :
+        atanK(angleK), atanN(angleN){}
+    
+} ANGLES;
+
+typedef struct ellipse_type{
+    ellipse_type() = default;
+    float a0;
+    float b0;
+    float atanK;
+    float atanN;
+    float ax;
+    float ay;
+    float bx;
+    float by;
+    float a;
+    float b;
+    ellipse_type(CENTER c, ANGLES ang, int radioAx) : a0(c.a0), b0(c.b0), atanK(ang.atanK),
+        atanN(ang.atanN), ax(radioAx){
+        float atanKrad = DEGREES_TO_RADIANS(atanK);
+        float atanNrad = DEGREES_TO_RADIANS(atanN);
+        float K = tan(atanKrad);
+        float N = tan(atanNrad);
+        ay = K*ax;
+        by = N*ax;
+        bx = -ay*by /ax;
+        a = sqrt(ax*ax + ay*ay);
+        b = sqrt(bx*bx+by*by);
+    }
+    
+} ELLIPSE;
+
+
+
+
 /*******************************************************************************
  
  MaxDetection: Compute local maximum
@@ -24,6 +71,21 @@ const unsigned char col1[3]={255,255,0}, col2[3]={0,0,0}, col3[3]={255,0,0}, col
  *******************************************************************************/
 void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
 {
+    ImgOut.fill(0);
+    CImgList<> ImgInGrad = ImgIn.get_gradient("xy",4);
+    
+    cimg_forXY(ImgOut,x,y)
+    {
+        float norm = sqrt(ImgInGrad[0](x,y)*ImgInGrad[0](x,y)+ImgInGrad[1](x,y)*ImgInGrad[1](x,y));
+        
+        float dx = ImgInGrad[0](x,y)/norm;
+        float dy = ImgInGrad[1](x,y)/norm;
+        
+        if(ImgIn(x,y)>ImgIn.linear_atXY(x+dx,y+dy) && ImgIn(x,y)>ImgIn.linear_atXY(x-dx,y-dy))
+            ImgOut(x,y) = ImgIn(x,y);
+    }
+}
+void MaxDetection(CImg<long> ImgIn, CImg<long> &ImgOut){
     ImgOut.fill(0);
     CImgList<> ImgInGrad = ImgIn.get_gradient("xy",4);
     
@@ -66,7 +128,7 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
                 
             }
             else{
-                average_value += (float) Acc(i+x, j+i);
+                average_value += (float) Acc(i, j);
                 
             }
             
@@ -102,19 +164,81 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
         
     }
 }
-
-int maxHisto(vector<unsigned long> &v){
-    unsigned long max = v.at(0);
-    int index = 0;
-    for(int i = 0; i < v.size(); ++i){
-        if(v.at(i) > max){
-            max = v.at(i);
-            index = i;
-        }
+int MaxHisto(CImg<long>& Histo){
+    long max = -1;
+    int i = -1;
+    cimg_forX(Histo, ax)
+    if(Histo(ax) > max){
+            max = Histo(ax);
+            i = ax;
     }
-    return index;
     
+    return i;
 }
+void findLocalMaxHisto(CImg<long> Acc, CImg<long> &Out, unsigned long long min_local_max_value, float sample_proportion_for_local_max){
+    Out.fill(0);
+    int count;
+    int i;
+    cimg_forX(Acc,x){
+        if(Acc(x) == -1)
+            continue;
+        
+        int x_c = x/2;
+        
+        unsigned long long val_c = Acc(x_c);
+        
+        if(val_c < min_local_max_value)
+            continue;
+        
+        bool max_value_flag = true;
+        float average_value = 0;
+        int num_tests = (int )(Acc. width() * sample_proportion_for_local_max);
+        for(count = 0; count < num_tests; ++count){
+            i = (int )(drand48() * (float )Acc.width());
+          
+            if(Acc(i) > val_c){
+                max_value_flag = false;
+                break;
+                
+            }
+            else{
+                average_value += (float) Acc(i+x);
+                
+            }
+            
+            //Biggest value?
+            average_value /= (float )num_tests;
+            if(((float) val_c) < (2.0*average_value))
+                continue;
+            
+            //Is it a local maxima?
+            max_value_flag = true;
+            cimg_forX(Acc, i)
+            if(Acc(i) > val_c)
+            {
+                max_value_flag = false;
+                break;
+            }
+            if(max_value_flag == false)
+                continue;
+            
+            //Here we have a local maxima
+            Out(x_c) = Acc(x_c);
+            
+            /* To stop us finding another local maximum near
+             * this one, we will mark all histogram entries
+             * in the window by setting them to -1.
+             */
+            for (i=x; i < Acc.width(); ++i)
+                Acc(i) = -1;
+            
+            
+        }
+        
+    }
+}
+
+
 void MaxAccCenter(CImg<> &Acc, int& a0, int& b0){
     long max = -1;
     cimg_forXY(Acc,x,y)
@@ -124,9 +248,20 @@ void MaxAccCenter(CImg<> &Acc, int& a0, int& b0){
         b0 =y;
     }
 }
+void MaxAccCenterModifyAcc(CImg<> &Acc, int& a0, int& b0){
+    long max = -1;
+    cimg_forXY(Acc,x,y)
+    if(Acc(x, y) > max){
+        max = Acc(x,y);
+        a0 = x;
+        b0 =y;
+        Acc(x,y) = -1;
+    }
+}
+
 void MaxAccKN(CImg<> &Acc, int& atanK, int& atanN){
     
-    int max = -1;
+    long  max = -1;
     for(int x = 0; x < Acc.width(); ++x)
         for(int y = 0; y < Acc.height(); ++y){
             if(Acc(x,y) > max){
@@ -136,29 +271,27 @@ void MaxAccKN(CImg<> &Acc, int& atanK, int& atanN){
             }
         }
 }
-float proportion_ellipse(CImg<>& ImgIn, float a0, float b0,float a, float b, float angle, float min_dist ){
+float proportion_ellipse(CImg<>& ImgIn, ELLIPSE ellipse,float min_dist ){
     float count= 0.0;
     float perimeter;
+    float a = ellipse.a;
+    float b = ellipse.b;
     int x1, y1, x2, y2;
     cimg_forXY(ImgIn, x, y)
     if(ImgIn(x,y) > 0){
-        float theta = DEGREES_TO_RADIANS(angle);
-        x1 = x - a0;
-        y1 = y - b0;
+        float theta = DEGREES_TO_RADIANS(ellipse.atanK);
+        x1 = x - ellipse.a0;
+        y1 = y - ellipse.b0;
         x2 = x1*cos(theta) + y1*sin(theta);
         y2 = -x1*sin(theta) + y1*cos(theta);
         
-        x2 /= a;
-        y2 /= b;
+        x2 /= ellipse.a;
+        y2 /= ellipse.b;
         if (abs((1.0 - (x2*x2 + y2*y2))) < min_dist)
         {
             count++;
         }
     }
-    
-    
-    
-    
     perimeter = M_PI * ( 3*(a+b) - sqrt((a+3*b)*(3*a+b)) ) * 2;
     return count/perimeter;
     
@@ -180,8 +313,38 @@ void checkAngle(float& angle){
     
     
 }
+int MaxHistoModifyAcc(CImg<long>& Histo){
+    long max = -1;
+    int index = -1;
+    cimg_forX(Histo, x)
+    if(Histo(x) > max){
+        max = Histo(x);
+        index  = x;
+        
+    }
+    Histo(index) = -1;
+    return index;
+}
+void maxAccKNModifyAcc(CImg<>& Acc, ANGLES& angles){
+      int atanK, atanN;
+        long  max = -1;
+        for(int x = 0; x < Acc.width(); ++x)
+            for(int y = 0; y < Acc.height(); ++y){
+                if(Acc(x,y) > max){
+                    max = Acc(x,y);
+                    atanK = x;
+                    atanN = y;
+                }
+            }
+    angles.atanK = atanK;
+    angles.atanN = atanN;
+    Acc(atanK, atanN) = -1;
+    
+    }
 
-void DrawEllipse(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long> &Histo){
+
+bool existsEllipse(CImg<> &ImgIn, const ELLIPSE& ellipse){
+    /*
     float min_ellipse_proportion = 0.2;
     float a_over_b;
     int a,b, a0,b0;
@@ -221,9 +384,91 @@ void DrawEllipse(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long
     /////
     
     }
+     */
     
-   
+    /*
+    int atanK;
+    int atanN;
+    CImg<> Acc1Copy(Acc1);
+    CImg <> Acc2Copy(Acc2);
+    CImg<> HistoCopy(Histo);
+    for(int i = 0; i < numMaxEllipses; ++i){
+        int a0, b0;
+        MaxAccCenterModifyAcc(Acc1, a0, b0);
+        std::cout << "Max Acc1:" << a0 << ", " << b0 << std::endl;
+        int ax = MaxHistoModifyAcc(Histo);
+        std::cout << "Max ax:" << ax << std::endl;
+        //cimg_forXY(Acc1, a0, b0)
+        if(Acc1Copy(a0,b0) > 0){
+            
+            maxAccKNModifyAcc(Acc2, atanK, atanN);
+                if(Acc2Copy(atanK, atanN) > 0){
+                    std::cout << "Max Acc2:" << atanK << ", " << atanN << std::endl;
+
+                    
+                    
+                            float min_ellipse_proportion = 0.2;
+                            float a_over_b;
+                            float atanKrad = DEGREES_TO_RADIANS(atanK);
+                            float atanNrad = DEGREES_TO_RADIANS(atanN);
+                            float K = tan(atanKrad);
+                            float N = tan(atanNrad);
+                            float ay = K*ax;
+                            float by = N*ax;
+                            float bx = -ay*by /ax;
+                            float a = sqrt(ax*ax + ay*ay);
+                            float b = sqrt(bx*bx+by*by);
+                            unsigned char purple[] = { 233,100,125 };
+                            if(a > 0 && b > 0){
+                                ///////
+                                float proportion = proportion_ellipse(ImgIn, a0,b0, a, b, atanK, 5);
+                                if(a != 0 && b != 0){
+                                    if(a > b){
+                                        a_over_b = ((float)a) / (float)b;
+                                    } else {
+                                        a_over_b = ((float)b) / ((float)a);
+                                    }
+                                } else {
+                                    a_over_b = 0;
+                                }
+                                //if ( (proportion > min_ellipse_proportion) && (a >= min_ellipse/2.0 && b >= min_ellipse/2.0 ) && a_over_b >= 1.50 )
+                                if ( (proportion > min_ellipse_proportion)  && a_over_b >= 1.20 )
+                                    //There is an ellipse;
+                                  //  ImgIn.draw_ellipse(a0, b0, a, b,atanK,purple,1,1);
+                        
+                    
+                    
+                }
+
+        
+        }} */
+    
+    float min_ellipse_proportion = 0.2;
+    float a_over_b;
+    float a = ellipse.a;
+    float b = ellipse.b;
+    
+    unsigned char purple[] = { 233,100,125 };
+    if(a > 0 && b > 0){
+        ///////
+        float proportion = proportion_ellipse(ImgIn, ellipse, 5);
+        if(a != 0 && b != 0){
+            if(a > b){
+                a_over_b = ((float)a) / (float)b;
+            } else {
+                a_over_b = ((float)b) / ((float)a);
+            }
+        } else {
+            a_over_b = 0;
+        }
+        //if ( (proportion > min_ellipse_proportion) && (a >= min_ellipse/2.0 && b >= min_ellipse/2.0 ) && a_over_b >= 1.50 )
+        if ( (proportion > min_ellipse_proportion)  && a_over_b >= 1.20 )
+            return true;
+
 }
+    return false;
+}
+
 
 CImg<> Module (CImg<> image)
 {
@@ -241,6 +486,8 @@ CImg<> Module (CImg<> image)
     
     
 }
+
+
 
 
 /******************************************
@@ -266,12 +513,10 @@ CImg<float> Phase (CImg<unsigned char> imageIn)
     return res;
 }
 
-void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long> Histo)
+void AccumulateCenters(CImg<> ImgIn, CImg<> &Acc1)
 {
     
 	Acc1.fill(0);
-	Acc2.fill(0);
-    
 	CImg<> module = Module(ImgIn);
 	CImgList<> grad = ImgIn.get_gradient("xy", 3);
     
@@ -332,25 +577,28 @@ void EllipseAccumulator(CImg<> ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigne
 
 
 
-void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned long>& Histo, int minA, int maxA, int minB, int maxB){
+void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses, const vector<CENTER>& centers, int minA, int maxA, int minB, int maxB, int numEllipses){
+    
     int
     xp, yp, atanK,atanN, a, b, x0,y0;
     
     float
     slopeFirstDerivativeP, slopeSecondDerivativeP, angleDerivativeP1, angleDerivativeP2, angleFirstDerivativeP, angleSecondDerivativeP, m1, m2, M1, M2, N, K,phi1, phi2, ro, X, Y,ax, ay, bx, by;
+    bool isThereACandidate = false;
     float margin = 0.0001;
+    //CImg<> CenterAcc(Acc1);
     CImg<> tangent(ImgIn.width(), ImgIn.height());
     CImg<> module(ImgIn.width(), ImgIn.height());
     module = Module(ImgIn);
     CImg<> phase(ImgIn.width(), ImgIn.height());
     phase = Phase(ImgIn);
     CImgList<> grad = ImgIn.get_gradient("xy", 3);
-  
-    
- 
-    
-    cimg_forXY(Acc1, a0, b0)
-        if(Acc1(a0,b0) > 0)
+    for(auto& center : centers){
+            //For each ellipse candidate
+        int a0 = center.a0;
+        int b0 = center.b0;
+        CImg<> Acc2(180, 180);
+        CImg<long> Histo(ImgIn.width()/2);
             cimg_forXY(module, x1, y1)
                 if(module(x1, y1) > 0) //There is an edge point
                     cimg_forXY(module, x2, y2)
@@ -368,9 +616,7 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                        
                         
                         if(abs(angleDerivativeP1-DEGREES_TO_RADIANS(90)) < margin || abs(angleDerivativeP1 - DEGREES_TO_RADIANS(270)) < margin || abs(angleDerivativeP2-DEGREES_TO_RADIANS(90)) < margin || abs(angleDerivativeP2 - DEGREES_TO_RADIANS(270)) < margin) continue;
-                        
-                        
-                      
+            
                         
                         if(abs(m1-m2) > DEGREES_TO_RADIANS(10)){
                             X = x2 - x1;
@@ -429,8 +675,12 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                                                         
                                                         Acc2(floor(i + 0.5f), floor(atanN+0.5f)) += 1;
                                                         std::cout << "Added to Acc2:" << floor(i + 0.5f) << ", " << floor(atanN+0.5f) << std::endl;
-                                                        ++Histo[floor(ax+0.5f)];
+                                                        Histo(floor(ax+0.5f)) += 1;
                                                         std::cout << "Added ax: " << floor(ax+0.5f) << std::endl;
+                                                        isThereACandidate = true;
+                                                        
+                                                        
+                                                        
                                                         
                                                     }
                                             }
@@ -439,23 +689,33 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
                                     }
                                     }
                                 }
+        
+        /* TODO: Make threshold of Acc2 here? 1 ellipse -> 1 Acc */
+        
+        /* Threshold accumulators */
+        if(isThereACandidate){
+            CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
+            Acc2Thresholded.fill(0);
+            MaxDetection(Acc2, Acc2Thresholded);
+            CImg<long> HistoThresholded(Histo);
+            HistoThresholded.fill(0);
+            MaxDetection(Histo, HistoThresholded);
+            for(int i = 0; i < numEllipses; ++i){
+                ANGLES angles;
+                maxAccKNModifyAcc(Acc2, angles);
+                int maxAx = MaxHistoModifyAcc(Histo);
+                ELLIPSE ellipse(center, angles, maxAx);
+                candidateEllipses.push_back(ellipse);
+            }
+            isThereACandidate = false;
+        }
+    
+        
+    }
     
     
     
 }
-    
-
-
-
-
-
-
-
-
-
-    
-  
-
 
 /*******************************************************************************
  
@@ -465,53 +725,68 @@ void AccumulateKN(CImg<> &ImgIn, CImg<> &Acc1, CImg<> &Acc2, vector<unsigned lon
 int main(int argc,char **argv)
 {
     cimg_usage("Retrieve command line arguments");
-    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled.bmp","Input image file");
+    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipses.bmp","Input image file");
     
+    /* Variables declaration */
     const int minA = 13;
-    const int maxA = 17;
+    const int maxA = 20;
     const int minB = 27;
     const int maxB = 34;
-    // Opening of filename
+    const int numMaxEllipses = 1;
+    const unsigned char color[] = {255,255,0};
     CImg<> img(filename);
-    
-    //CImg<> img(400, 400, 1, 3, 255);
-    //img.draw_ellipse(200, 200, 50, 100, cimg::PI/4, col1);
-    
-    // Accumulator Computation
-    CImg<> Acc1(img.width(), img.height());
-    CImg<> Acc2(180, 180);
-    std::vector<unsigned long> Histo(img.width()/2);
-    
-    EllipseAccumulator(img, Acc1, Acc2, Histo);
-    CImg<> Acc1Thresholded(Acc1.width(), Acc1.height());
-    MaxDetection(Acc1, Acc1Thresholded);
-    CImg<> localMaxCenter(Acc1Thresholded.width(), Acc1Thresholded.height());
-    unsigned long long sum = 0;
-    cimg_forXY(Acc1Thresholded, x,y){
-        sum += Acc1Thresholded(x,y);
-    }
-    sum /=(Acc1Thresholded.width() + Acc1Thresholded.height());
-    findLocalMax(Acc1Thresholded, localMaxCenter, sum, 0.1);
-    CImgDisplay localMaxCenterSpatial(localMaxCenter, "Local Max Center");
-    AccumulateKN(img, localMaxCenter, Acc2, Histo, minA, maxA, minB, maxB);
-    CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
-    MaxDetection(Acc2, Acc2Thresholded);
-    
-    // Display
-    CImg<> result(img.width(), img.height());
-   
-    CImgDisplay acc1Spatial(Acc1,"Accumulator 1 map");
-    CImgDisplay acc2Spatial(Acc2,"Accumulator 2 map");
+    CImg<> module = Module(img);
     CImgDisplay dispSpatial(img,"Input Image");
     
-    CImgDisplay acc1ThresholdedSpatial(Acc1Thresholded, "Acc1 Thresholded");
-    CImg<> module = Module(img);
-    CImgDisplay moduleImgSpatial(module, "Module");
-   
-    CImgDisplay Acc2ThresholdedSpatial(Acc2Thresholded, "Acc2 Thresholded");
-    DrawEllipse(img, Acc1Thresholded, Acc2Thresholded, Histo);
+    /*********************************************************/
+    /* Begin accumulation of centers */
+    /**********************************************************/
     
-    while (!dispSpatial.is_closed() && !acc1Spatial.is_closed() && !acc2Spatial.is_closed())
+    /* Declare and initialize accumulator of centers */
+    CImg<> Acc1(img.width(), img.height());
+    Acc1.fill(0);
+    
+    
+    /* Accumulate */
+    AccumulateCenters(img, Acc1);
+    
+    /* Threshold centers accumulator */
+    CImg<> Acc1Thresholded(Acc1.width(), Acc1.height());
+    Acc1Thresholded.fill(0);
+    MaxDetection(Acc1, Acc1Thresholded);
+    
+    /* Make a copy of thresholded accumulator center so that we can modify the copy*/
+   const CImg<> Acc1Copy(Acc1Thresholded);
+    
+    /* Display centers accumulator */
+    CImgDisplay acc1Spatial(Acc1Copy, "Acc1 Thresholded");
+    
+    
+    /*
+      Save centers in a vector of centers depending on the number of ellipses.
+      We suppose here that a center corresponds to one and only one ellipse.
+     */
+    vector<CENTER> centers(numMaxEllipses);
+    for(int i = 0; i < numMaxEllipses; ++i){
+        int a0, b0;
+        MaxAccCenterModifyAcc(Acc1, a0, b0);
+        CENTER c(a0,b0);
+        centers.push_back(c);
+    }
+    
+    /*********************************************************/
+    /* Accumulation of centers finished */
+    /**********************************************************/
+
+
+    vector<ELLIPSE> candidateEllipses(numMaxEllipses);
+    ExtractCandidateEllipses(img, candidateEllipses, centers, minA, maxA, minB,maxB,numMaxEllipses);
+    std::for_each(candidateEllipses.begin(), candidateEllipses.end(), [&](const ELLIPSE& candidate){
+        if(existsEllipse(module, candidate)){
+            img.draw_ellipse(candidate.a0, candidate.b0, candidate.a, candidate.b, candidate.atanK, color, 1,1);
+        }
+    });
+    while (!dispSpatial.is_closed() && !acc1Spatial.is_closed())
     {
         
         dispSpatial.wait(dispSpatial,acc1Spatial);
@@ -529,5 +804,5 @@ int main(int argc,char **argv)
         
     }
     return 0;
-}
 
+}
