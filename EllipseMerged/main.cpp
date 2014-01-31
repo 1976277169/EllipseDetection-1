@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+ ////////////////////////////////////////////////////////////////////////////////
 //                          PROJET				                              //
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -16,6 +16,9 @@ using namespace std;
 #define DEGREES_TO_RADIANS(degrees) (degrees*M_PI/180)
 #define RADIANS_TO_DEGREES(radians) (radians*180/M_PI)
 
+const int HoughHistoThreshold = 1;
+const int HoughKNThreshold = 1;
+const int HoughCenterThreshold = 1000;
 
 const unsigned char col1[3]={255,255,0}, col2[3]={0,0,0}, col3[3]={255,0,0}, col4[3]={0,255,0};
 typedef struct center_point_type {
@@ -60,99 +63,6 @@ typedef struct ellipse_type{
     
 } ELLIPSE;
 
-/** CannyDiscrete.
- *
- * Version with discrete implementation of the non-maximum-suppression.
- *
- * During the nms, the gradient and its orientation are treated discrete,
- * e.g., only four directions are considered: E, NE, N, SE.
- */
-void CannyDiscrete(CImg<float> in, float threshold, CImg<float> &outThreshold,CImg<float> &outNMS) {
-	const int nx = in.width();
-	const int ny = in.height();
-    
-    /************ initialize memory ************/
-    CImg<float> outGradient = in; outGradient.fill(0.0f);
-	CImg<int> dirmax(outGradient);
-	CImg<float> derivative[4];
-	for(int i = 0; i < 4; i++) { derivative[i] = outGradient; }
-    CImg<float> outOrientation = outGradient;
-    outThreshold = outGradient;
-    outNMS = outGradient;
-    
-    /************** smoothing the input image ******************/
-    //CImg<float> filter;
-    //gauss_filter(filter, sigma, 0);
-    //outSmooth = in.get_convolve(filter).convolve(filter.get_transpose());
-    CImg<> outSmooth = in.get_blur(2.5).get_transpose().get_blur(2.5);
-	
-    
-    /************ loop over all pixels in the interior **********************/
-	float fct = 1.0 / (2.0*M_SQRT2);
-	for (int y = 1; y < ny-1; y++) {
-		for(int x = 1; x < nx-1; x++) {
-			//***** compute directional derivatives (E,NE,N,SE) ****//
-			float grad_E = (outSmooth(x+1,y  ) - outSmooth(x-1,y  ))*0.5; // E
-			float grad_NE = (outSmooth(x+1,y-1) - outSmooth(x-1,y+1))*fct; // NE
-			float grad_N = (outSmooth(x,  y-1) - outSmooth(x,  y+1))*0.5; // N
-			float grad_SE = (outSmooth(x+1,y+1) - outSmooth(x-1,y-1))*fct; // SE
-			
-			//***** compute gradient magnitude *********//
-            float grad_mag = grad_E*grad_E + grad_N*grad_N;
-			outGradient(x,y) = grad_mag;
-            
-            //***** compute gradient orientation (continuous version)*******//
-            float angle = 0.0f;
-            if (grad_mag > 0.0f) { angle =  atan2(grad_N, grad_E); }
-			if (angle < 0.0) angle += M_PI;
-			outOrientation(x,y) = angle*255.0/M_PI + 0.5; // -> outOrientation
-            
-			//***** compute absolute derivations *******//
-            derivative[0](x,y) = grad_E = fabs(grad_E);
-            derivative[1](x,y) = grad_NE = fabs(grad_NE);
-            derivative[2](x,y) = grad_N = fabs(grad_N);
-            derivative[3](x,y) = grad_SE = fabs(grad_SE);
-			
-			//***** compute direction of max derivative //
-            if ((grad_E>grad_NE) && (grad_E>grad_N) && (grad_E>grad_SE)) {
-				dirmax(x,y) = 0; // E
-            } else if ((grad_NE>grad_N) && (grad_NE>grad_SE)){
-				dirmax(x,y) = 1; // NE
-            } else if (grad_N>grad_SE) {
-				dirmax(x,y) = 2; // N
-            } else {
-				dirmax(x,y) = 3; // SE
-            }
-            // one may compute the contiuous dominant direction computation...
-            //outOrientation(x,y) = dirmax(x,y)*255.f/4;
-        } } // for x,y
-    
-    // directing vectors (E, NE, N, SE)
-	int dir_vector[4][2] = {{1,0}, {1,-1}, {0,-1}, {1,1}};
-    // direction of max derivative of
-    // current pixel and its two neighbouring pixel (in direction of dir)
-	int dir, dir1, dir2;
-    
-	//***** thresholding and (canny) non-max-supression *//
-	for (int y = 2; y < ny-2; y++) {
-		for (int x = 2; x < nx-2; x++) {
-			dir = dirmax(x,y);
-			if (derivative[dir](x,y) < threshold) {
-				outThreshold(x,y) = 0.0f;
-				outNMS(x,y) = 0.0f;
-			} else {
-				outThreshold(x,y) = 255.0f;
-                int dx = dir_vector[dir][0];
-                int dy = dir_vector[dir][1];
-				dir1 = dirmax(x + dx,y + dy);
-				dir2 = dirmax(x - dx,y - dy);
-				outNMS(x,y) = 255.0f*
-                ((derivative[dir](x,y) > derivative[dir1](x + dx, y + dy)) && 
-                 (derivative[dir](x,y) >= derivative[dir2](x-dx,y-dy)));
-			} // -> outThreshold, outNMS
-        } } // for x, y...
-} // CannyDiscrete
-
 
 
 /*******************************************************************************
@@ -162,7 +72,7 @@ void CannyDiscrete(CImg<float> in, float threshold, CImg<float> &outThreshold,CI
  ImgOut  : Maximum map of ImgIn
  
  *******************************************************************************/
-void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut, int threshold)
+void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
 {
     ImgOut.fill(0);
     CImgList<> ImgInGrad = ImgIn.get_gradient("xy",4);
@@ -405,21 +315,21 @@ float proportion_ellipse(CImg<>& ImgIn, ELLIPSE ellipse,float min_dist ){
     float b = ellipse.b;
     int x1, y1, x2, y2;
     cimg_forXY(ImgIn, x, y)
-    if(ImgIn(x,y) > 0){
-        float theta = DEGREES_TO_RADIANS(ellipse.atanK);
-        x1 = x - ellipse.a0;
-        y1 = y - ellipse.b0;
-        x2 = x1*cos(theta) + y1*sin(theta);
-        y2 = -x1*sin(theta) + y1*cos(theta);
-        
-        x2 /= ellipse.a;
-        y2 /= ellipse.b;
-        if (abs((1.0 - (x2*x2 + y2*y2))) < min_dist)
-        {
-            count++;
+        if(ImgIn(x,y) > 0){
+            float theta = DEGREES_TO_RADIANS(ellipse.atanK);
+            x1 = x - ellipse.a0;
+            y1 = y - ellipse.b0;
+            x2 = x1*cos(theta) + y1*sin(theta);
+            y2 = -x1*sin(theta) + y1*cos(theta);
+            
+            x2 /= ellipse.a;
+            y2 /= ellipse.b;
+            if (abs((1.0 - (x2*x2 + y2*y2))) < min_dist)
+            {
+                count++;
+            }
         }
-    }
-    perimeter = M_PI * ( 3*(a+b) - sqrt((a+3*b)*(3*a+b)) ) * 2;
+    perimeter = M_PI * ( 3*(a+b) - sqrt((a+3*b)*(3*a+b)) );
     return count/perimeter;
     
     
@@ -455,7 +365,7 @@ bool MaxHistoModifyAcc(CImg<long>& Histo, int& index){
     index = -1;
     bool isThereAx = false;
     cimg_forX(Histo, x)
-    if(Histo(x) > 0 && Histo(x) < Histo.width() && IsLocalMaxOfHisto(Histo, x)){
+    if(Histo(x) > 0 && Histo(x) > max && Histo(x) < Histo.width() && IsLocalMaxOfHisto(Histo, x)){
         max = Histo(x);
         index  = x;
         isThereAx = true;
@@ -467,7 +377,8 @@ bool MaxHistoModifyAcc(CImg<long>& Histo, int& index){
     return isThereAx;
 }
 bool maxAccKNModifyAcc(CImg<>& Acc, ANGLES& angles){
-      int atanK, atanN;
+    int atanK = -1;
+    int atanN = -1;
         bool areThereAngles = false;
         long  max = -1;
         for(int x = 0; x < Acc.width(); ++x)
@@ -598,7 +509,7 @@ bool existsEllipse(CImg<> &ImgIn, const ELLIPSE& ellipse){
         
         }} */
     
-    float min_ellipse_proportion = 0.2;
+    float min_ellipse_proportion = 2.0;
     float a_over_b;
     float a = ellipse.a;
     float b = ellipse.b;
@@ -606,7 +517,7 @@ bool existsEllipse(CImg<> &ImgIn, const ELLIPSE& ellipse){
     unsigned char purple[] = { 233,100,125 };
     if(a > 0 && b > 0){
         ///////
-        float proportion = proportion_ellipse(ImgIn, ellipse, 5);
+        float proportion = proportion_ellipse(ImgIn, ellipse, 0.01);
         if(a != 0 && b != 0){
             if(a > b){
                 a_over_b = ((float)a) / (float)b;
@@ -740,26 +651,25 @@ bool AccumulateCenters(CImg<> ImgIn, CImg<> &Acc1)
 void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses, const vector<CENTER>& centers, int minA, int maxA, int minB, int maxB, int numEllipses){
     
     int
-    xp, yp, atanK,atanN, a, b, x0,y0;
+    xp, yp,atanN, a, b, x0,y0;
     
     float
-    slopeFirstDerivativeP, slopeSecondDerivativeP, angleDerivativeP1, angleDerivativeP2, angleFirstDerivativeP, angleSecondDerivativeP, m1, m2, M1, M2, N, K,phi1, phi2, ro, X, Y,ax, ay, bx, by;
+    slopeFirstDerivativeP, slopeSecondDerivativeP, angleDerivativeP1, angleDerivativeP2, angleFirstDerivativeP, angleSecondDerivativeP, M1, M2, N, K,phi1, phi2, ro, X, Y,ax, ay, bx, by;
     bool isThereACandidate = false;
+    CImg<long> Histo(ImgIn.width()/2);
     float margin = 0.0001;
-    //CImg<> CenterAcc(Acc1);
-    CImg<> tangent(ImgIn.width(), ImgIn.height());
     CImg<> module(ImgIn.width(), ImgIn.height());
+    CImg<> Acc2(180, 180);
     module = Module(ImgIn);
     CImg<> phase(ImgIn.width(), ImgIn.height());
     phase = Phase(ImgIn);
     CImgList<> grad = ImgIn.get_gradient("xy", 3);
-    for(const auto& center : centers){
+    for(int i = 0; i < numEllipses; ++i){
+        CENTER center = centers.at(i);
             //For each ellipse candidate
         std::cout << "Center: (" << center.a0 << ", " << center.b0 << ")" << std::endl;
         int a0 = center.a0;
         int b0 = center.b0;
-        CImg<> Acc2(180, 180);
-        CImg<long> Histo(ImgIn.width()/2);
             cimg_forXY(module, x1, y1)
                 if(module(x1, y1) > 0) //There is an edge point
                     cimg_forXY(module, x2, y2)
@@ -850,67 +760,88 @@ void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses,
                                     }
                                     }
                                 }
-        
+    }
+    
         /* TODO: Make threshold of Acc2 here? 1 ellipse -> 1 Acc */
         
         /* Threshold accumulators */
         if(isThereACandidate){
             CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
             Acc2Thresholded.fill(0);
-            MaxDetection(Acc2, Acc2Thresholded, 200);
-            CImg<> Acc2NMS(Acc2.width(), Acc2.height());
-            Acc2NMS.fill(0);
+            cimg_forXY(Acc2, x, y)
+                if(Acc2(x,y) < HoughKNThreshold)
+                    Acc2(x,y) = 0;
+            cimg_forX(Histo, x)
+                if(Histo(x) < HoughHistoThreshold)
+                    Histo(x) = 0;
+                
+            
+            MaxDetection(Acc2, Acc2Thresholded);
             CImg<> HistoThresholded(Histo);
             HistoThresholded.fill(0);
-            CImg<> HistoNMS(Histo);
-            HistoNMS.fill(0);
-            MaxDetection(Histo, HistoThresholded, 200);
+            MaxDetection(Histo, HistoThresholded);
             vector<ANGLES> list_of_angles;
+            
+            CImg<> copyAcc2(Acc2Thresholded);
+            CImg<long> copyH(HistoThresholded);
+            vector<int> list_of_ax;
             for(int i = 0; i < numEllipses; ++i){
-                
                 ANGLES angles;
-                CImg<> copy(Acc2Thresholded);
-                if(maxAccKNModifyAcc(copy, angles)){
-                    //int maxAx = MaxHistoModifyAcc(Histo);
-                    //ELLIPSE ellipse(center, angles, maxAx);
-                    //candidateEllipses.push_back(ellipse);
+               
+                if(maxAccKNModifyAcc(copyAcc2, angles)){
                     list_of_angles.push_back(angles);
                 }
-                else break;
+                else
+                    break;
             }
-            std::for_each(list_of_angles.begin(), list_of_angles.end(), [&](const ANGLES&theAngles){
-                CImg<long> copy(HistoThresholded);
-                for(int i = 0; i < numEllipses; ++i){
-                    
+            for(int i = 0; i < numEllipses; ++i){
+                int ax;
+                if(MaxHistoModifyAcc(copyH, ax)){
+                    list_of_ax.push_back(ax);
+                }
+                else
+                    break;
+            }
+            
+            
+            /*
+            std::for_each(list_of_angles.begin(), list_of_angles.end(), [&](const ANGLES& theAngles){
+                
                     int ax;
-                    if(MaxHistoModifyAcc(copy,ax)){
+                    if(MaxHistoModifyAcc(copyH,ax)){
                         ELLIPSE ellipse(center, theAngles, ax);
                         candidateEllipses.push_back(ellipse);
                     }
-                    else break;
-                }
             });
+             */
             
+            //Version 1: With ordering
             /*
-            CannyDiscrete(Acc2, 7.0, Acc2Thresholded, Acc2NMS);
-            CannyDiscrete(Histo,7.0, HistoThresholded, HistoNMS);
-            cimg_forXY(Acc2NMS, k1, k2)
-                if(Acc2NMS(k1,k2) > 0)
-                    cimg_forX(HistoNMS, k3)
-                        if(HistoNMS(k3) > 0){
-                            ANGLES angles;
-                            angles.atanK = k1;
-                            angles.atanN = k2;
-                            ELLIPSE ellipse(center, angles, k3);
-                            candidateEllipses.push_back(ellipse);
-                    }
-            */
-            
+            for(int i = 0; i < numEllipses; ++i){
+                if(i < centers.size() && i < list_of_angles.size() && i < list_of_ax.size()){
+                    ELLIPSE ellipse(centers.at(i), list_of_angles.at(i), list_of_ax.at(i));
+                    candidateEllipses.push_back(ellipse);
+                }
+                else
+                    break;
+            }
+                
+             */
+            //Version 2:
+            std::for_each(centers.begin(), centers.end(), [&](CENTER center){
+                std::for_each(list_of_angles.begin(), list_of_angles.end(), [&](ANGLES theAngles){
+                    std::for_each(list_of_ax.begin(), list_of_ax.end(), [&](int theIndex){
+                        ELLIPSE ellipse(center, theAngles, theIndex);
+                        candidateEllipses.push_back(ellipse);
+                    });
+                });
+                
+            });
             isThereACandidate = false;
         }
     
         
-    }
+    
     
     
     
@@ -931,8 +862,7 @@ int main(int argc,char **argv)
     const int maxA = 18;
     const int minB = 26;
     const int maxB = 34;
-    const int numMaxEllipses = 1;
-    const int HoughThreshold = 1000;
+    const int numMaxEllipses = 3;
     const unsigned char color[] = {255,255,0};
     CImg<> img(filename);
     CImg<> module = Module(img);
@@ -950,39 +880,17 @@ int main(int argc,char **argv)
     
     /* Accumulate */
     AccumulateCenters(img, Acc1);
-    
+    cimg_forXY(Acc1, x, y){
+        if(Acc1(x,y) < HoughCenterThreshold)
+            Acc1(x,y) = 0;
+    }
     /* Threshold centers accumulator */
     CImg<> Acc1Thresholded(Acc1.width(), Acc1.height());
     Acc1Thresholded.fill(0);
-    CImg<> Acc1NMS(Acc1.width(), Acc1.height());
-    Acc1NMS.fill(0);
-    MaxDetection(Acc1, Acc1Thresholded, HoughThreshold);
+    MaxDetection(Acc1, Acc1Thresholded);
     CImg<> Acc1Maxima(Acc1);
     Acc1Maxima.fill(0);
-    
-    
-    CImg<> Acc1Thresholded2(Acc1Thresholded);
-    Acc1Thresholded2.fill(0);
-    CImg<> Im3(Acc1);
-   
-   // CannyDiscrete(Acc1Thresholded, 2.0, Acc1Thresholded2, Acc1NMS);
-    //CImg<> LocalMaxAcc1(Acc1Thresholded.width(), Acc1Thresholded.height())
-    /* Make a copy of thresholded accumulator center so that we can modify the copy*/
-   
-    
-    long long sum = 0;
-    int count = 0;
-    cimg_forXY(Acc1NMS, x, y){
-        if(Acc1NMS(x,y) > 0){
-            sum += Acc1NMS(x,y);
-            ++count;
-        }
-        
-    }
-    if(count > 0)
-    sum /= count;
-    //findLocalMax(Acc1NMS, Im3, sum, 0.2);
-    
+
     const CImg<> Acc1Copy(Acc1Thresholded);
     /* Display centers accumulator */
     CImgDisplay acc1Spatial(Acc1Copy, "Acc1 Thresholded");
@@ -1003,18 +911,6 @@ int main(int argc,char **argv)
         
     }
     
-    /*
-    vector<CENTER> centers;
-    for(int i = 0; i < numMaxEllipses; ++i){
-        int a0, b0;
-        if(MaxAccCenterModifyAcc(Acc1Thresholded, a0, b0)){
-            CENTER c(a0,b0);
-            centers.push_back(c);
-        }
-        else break;
-    }
-     */
-    
     /*********************************************************/
     /* Accumulation of centers finished */
     /**********************************************************/
@@ -1022,11 +918,14 @@ int main(int argc,char **argv)
 
     vector<ELLIPSE> candidateEllipses;
     ExtractCandidateEllipses(img, candidateEllipses, centers, minA, maxA, minB,maxB,numMaxEllipses);
+    int drawn = 0;
     std::for_each(candidateEllipses.begin(), candidateEllipses.end(), [&](const ELLIPSE& candidate){
-        if(existsEllipse(module, candidate)){
+        if(drawn < numMaxEllipses && existsEllipse(module, candidate)){
             img.draw_ellipse(candidate.a0, candidate.b0, candidate.a, candidate.b, candidate.atanK, color, 1,1);
+            ++drawn;
         }
     });
+    
     while (!dispSpatial.is_closed() && !acc1Spatial.is_closed())
     {
         
