@@ -16,6 +16,7 @@ using namespace std;
 #define DEGREES_TO_RADIANS(degrees) (degrees*M_PI/180)
 #define RADIANS_TO_DEGREES(radians) (radians*180/M_PI)
 
+
 const unsigned char col1[3]={255,255,0}, col2[3]={0,0,0}, col3[3]={255,0,0}, col4[3]={0,255,0};
 typedef struct center_point_type {
     int a0, b0;
@@ -161,7 +162,7 @@ void CannyDiscrete(CImg<float> in, float threshold, CImg<float> &outThreshold,CI
  ImgOut  : Maximum map of ImgIn
  
  *******************************************************************************/
-void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
+void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut, int threshold)
 {
     ImgOut.fill(0);
     CImgList<> ImgInGrad = ImgIn.get_gradient("xy",4);
@@ -174,9 +175,11 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
         float dy = ImgInGrad[1](x,y)/norm;
         
         if(ImgIn(x,y)>ImgIn.linear_atXY(x+dx,y+dy) && ImgIn(x,y)>ImgIn.linear_atXY(x-dx,y-dy))
-            ImgOut(x,y) = ImgIn(x,y);
+                ImgOut(x,y) = ImgIn(x,y);
     }
 }
+
+
 void MaxDetection(CImg<long> ImgIn, CImg<long> &ImgOut){
     ImgOut.fill(0);
     CImgList<> ImgInGrad = ImgIn.get_gradient("xy",4);
@@ -192,6 +195,8 @@ void MaxDetection(CImg<long> ImgIn, CImg<long> &ImgOut){
             ImgOut(x,y) = ImgIn(x,y);
     }
 }
+
+
 
  void findLocalMax(CImg<> Acc, CImg<> &Out, unsigned long long min_local_max_value, float sample_proportion_for_local_max){
      Out.fill(0);
@@ -341,32 +346,42 @@ void MaxAccCenter(CImg<> &Acc, int& a0, int& b0){
     }
    
 }
+bool IsLocalMax(CImg<> &Acc, int a0, int b0){
+     long max = Acc(a0,b0);
+    for(int dx = -4; dx < 4; ++dx)
+        for(int dy = -4; dy < 4; ++dy)
+            if(a0 + dx < Acc.width() && a0+dx > 0 && b0+dy > 0 && b0+dy < Acc.height()){
+                if(Acc(a0+dx, b0+dy) > max)
+                    return false;
+                
+            }
+    return true;
+}
 bool MaxAccCenterModifyAcc(CImg<> &Acc, int& a0, int& b0){
     a0 = -1;
     b0 = -1;
-    long max = -1;
+    long max = 0;
     bool isThereACenter = false;
     cimg_forXY(Acc,x,y)
         if(Acc(x,y) > 0 && Acc(x, y) > max){
-            max = Acc(x,y);
-            a0 = x;
-            b0 =y;
-            Acc(x,y) = -1;
-            
+            if(IsLocalMax(Acc, x , y)){
+                max = Acc(x,y);
+                a0 = x;
+                b0 = y;
             isThereACenter = true;
+            }
+            
         }
-    if(isThereACenter){
-        for(int i = -3; i < 3; ++i){
-            for(int x = a0+i; x > 0 && x > a0 - 3; x--)
-                if(b0 + i > 0 && b0 + i < Acc.height())
-                    Acc(x, b0+i) = -1;
-            for(int x = a0; x < Acc.width() && x < a0 + 3; x++)
-                if(b0 +i > 0 && b0 + i < Acc.height())
-                    Acc(x, b0+i) = -1;
-        }
-       
+    if(isThereACenter)
+        for(int dx = -4; dx < 4; ++dx)
+            for(int dy = -4; dy < 4; ++dy)
+                if(a0+dx > 0 && a0 + dx < Acc.width() && b0+dy > 0 && b0+dy < Acc.height())
+                    Acc(a0+dx, b0+dy) = -1;
+                
+            
         
-    }
+    
+    
     
     return isThereACenter;
 }
@@ -425,18 +440,30 @@ void checkAngle(float& angle){
     
     
 }
+
+bool IsLocalMaxOfHisto(CImg<long>& Histo, int index){
+    long max = Histo(index);
+    for(int dx = -4; dx < 4; ++dx)
+        if(index + dx > 0 && index + dx < Histo.width())
+            if(Histo(index + dx) > max)
+                return false;
+    return true;
+            
+}
 bool MaxHistoModifyAcc(CImg<long>& Histo, int& index){
     long max = -1;
     index = -1;
     bool isThereAx = false;
     cimg_forX(Histo, x)
-    if(Histo(x) > 0 && Histo(x) > max){
+    if(Histo(x) > 0 && Histo(x) < Histo.width() && IsLocalMaxOfHisto(Histo, x)){
         max = Histo(x);
         index  = x;
         isThereAx = true;
     }
-    for(int x = index-3; isThereAx && x > 0 && x < index+3 && x < Histo.width(); ++x)
-            Histo(x) = -1;
+    if(isThereAx)
+        for(int dx = -4; dx < 4; ++dx)
+            if(index + dx > 0 && index + dx < Histo.width())
+                Histo(index+dx) = -1;
     return isThereAx;
 }
 bool maxAccKNModifyAcc(CImg<>& Acc, ANGLES& angles){
@@ -445,19 +472,26 @@ bool maxAccKNModifyAcc(CImg<>& Acc, ANGLES& angles){
         long  max = -1;
         for(int x = 0; x < Acc.width(); ++x)
             for(int y = 0; y < Acc.height(); ++y){
-                if(Acc(x,y) > 0 && Acc(x,y) > max){
+                if(Acc(x,y) > 0 && Acc(x,y) > max && IsLocalMax(Acc, x, y)){
                     max = Acc(x,y);
                     atanK = x;
                     atanN = y;
-                    Acc(x,y) = -1;
+                    
                     areThereAngles = true;
                 }
             }
-    for(int x = atanK-3; areThereAngles && x >0 && x < atanK+3 && x < Acc.width(); ++x)
-        for(int y = atanN - 3; y > 0 && y < atanN + 3 && y < Acc.height(); ++y)
-            Acc(atanK,atanN) = -1,
-    angles.atanK = atanK;
-    angles.atanN = atanN;
+    if(areThereAngles){
+        
+            for(int dx = -4; dx < 4; ++dx)
+                for(int dy = -4; dy < 4; ++dy)
+                    if(atanK+dx > 0 && atanK + dx < Acc.width() && atanN+dy > 0 && atanN+dy < Acc.height())
+                        Acc(atanK+dx, atanN+dy) = -1;
+        
+        angles.atanK = atanK;
+        angles.atanN = atanN;
+    }
+        
+  
     
     return areThereAngles;
     
@@ -680,8 +714,10 @@ bool AccumulateCenters(CImg<> ImgIn, CImg<> &Acc1)
                    
                     b0 = (a0 - xm) * ((yt-ym)/(xt-xm)) + ym;
                     
+                    
                     if (b0 >= module.height() || b0 < 0)
                         continue;
+                    
                     
                     Acc1(a0, b0) += 1;
                     if(!isACenterFound)
@@ -821,14 +857,14 @@ void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses,
         if(isThereACandidate){
             CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
             Acc2Thresholded.fill(0);
-            MaxDetection(Acc2, Acc2Thresholded);
+            MaxDetection(Acc2, Acc2Thresholded, 200);
             CImg<> Acc2NMS(Acc2.width(), Acc2.height());
             Acc2NMS.fill(0);
             CImg<> HistoThresholded(Histo);
             HistoThresholded.fill(0);
             CImg<> HistoNMS(Histo);
             HistoNMS.fill(0);
-            MaxDetection(Histo, HistoThresholded);
+            MaxDetection(Histo, HistoThresholded, 200);
             vector<ANGLES> list_of_angles;
             for(int i = 0; i < numEllipses; ++i){
                 
@@ -843,8 +879,9 @@ void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses,
                 else break;
             }
             std::for_each(list_of_angles.begin(), list_of_angles.end(), [&](const ANGLES&theAngles){
+                CImg<long> copy(HistoThresholded);
                 for(int i = 0; i < numEllipses; ++i){
-                    CImg<long> copy(HistoThresholded);
+                    
                     int ax;
                     if(MaxHistoModifyAcc(copy,ax)){
                         ELLIPSE ellipse(center, theAngles, ax);
@@ -887,7 +924,7 @@ void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses,
 int main(int argc,char **argv)
 {
     cimg_usage("Retrieve command line arguments");
-    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled.bmp","Input image file");
+    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled-60.bmp","Input image file");
     
     /* Variables declaration */
     const int minA = 13;
@@ -895,6 +932,7 @@ int main(int argc,char **argv)
     const int minB = 26;
     const int maxB = 34;
     const int numMaxEllipses = 1;
+    const int HoughThreshold = 1000;
     const unsigned char color[] = {255,255,0};
     CImg<> img(filename);
     CImg<> module = Module(img);
@@ -918,7 +956,11 @@ int main(int argc,char **argv)
     Acc1Thresholded.fill(0);
     CImg<> Acc1NMS(Acc1.width(), Acc1.height());
     Acc1NMS.fill(0);
-    MaxDetection(Acc1, Acc1Thresholded);
+    MaxDetection(Acc1, Acc1Thresholded, HoughThreshold);
+    CImg<> Acc1Maxima(Acc1);
+    Acc1Maxima.fill(0);
+    
+    
     CImg<> Acc1Thresholded2(Acc1Thresholded);
     Acc1Thresholded2.fill(0);
     CImg<> Im3(Acc1);
@@ -950,17 +992,18 @@ int main(int argc,char **argv)
       Save centers in a vector of centers depending on the number of ellipses.
       We suppose here that a center corresponds to one and only one ellipse.
      */
-    /*
+    
     vector<CENTER> centers;
     for(int i = 0; i < numMaxEllipses; ++i){
         int a0, b0;
-        if(MaxAccCenterModifyAcc(Acc1NMS, a0, b0)){
+        if(MaxAccCenterModifyAcc(Acc1Thresholded, a0, b0)){
             CENTER c(a0,b0);
             centers.push_back(c);
         }
         
     }
-     */
+    
+    /*
     vector<CENTER> centers;
     for(int i = 0; i < numMaxEllipses; ++i){
         int a0, b0;
@@ -970,6 +1013,7 @@ int main(int argc,char **argv)
         }
         else break;
     }
+     */
     
     /*********************************************************/
     /* Accumulation of centers finished */
