@@ -509,7 +509,7 @@ bool existsEllipse(CImg<> &ImgIn, const ELLIPSE& ellipse){
         
         }} */
     
-    float min_ellipse_proportion = 2.0;
+    float min_ellipse_proportion = 1.2;
     float a_over_b;
     float a = ellipse.a;
     float b = ellipse.b;
@@ -712,7 +712,7 @@ void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses,
                             float mt = (ym-yt)/(xm-xt);
                             xp = floor(((-mt)*(xt) - b0 + yt + slopeSecondDerivativeP*a0)/(slopeSecondDerivativeP - mt)+0.5f);
                             yp = floor(slopeSecondDerivativeP*(xp - a0) + b0 +0.5f);
-                            if(xp >0 && xp < ImgIn.width() && yp > 0 && yp < ImgIn.height() && module(xp, yp) > 0){
+                            if(xp >0 && xp < ImgIn.width() && yp > 0 && yp < ImgIn.height()){
                                     phi1 = atan2(Y,X);
                                    
                                     phi2 = atan((2*M1*X - Y*M2)/(X*M2-2*Y));
@@ -855,14 +855,14 @@ void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses,
 int main(int argc,char **argv)
 {
     cimg_usage("Retrieve command line arguments");
-    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled-60.bmp","Input image file");
+    const char* filename = cimg_option("-i","/Users/rubcuevas/Desktop/Algorithmie de l'image/EllipseDetection/EllipseMerged/ellipsefilled.bmp","Input image file");
     
     /* Variables declaration */
     const int minA = 13;
-    const int maxA = 18;
+    const int maxA = 17;
     const int minB = 26;
-    const int maxB = 34;
-    const int numMaxEllipses = 3;
+    const int maxB = 33;
+    const int numMaxEllipses = 1;
     const unsigned char color[] = {255,255,0};
     CImg<> img(filename);
     CImg<> module = Module(img);
