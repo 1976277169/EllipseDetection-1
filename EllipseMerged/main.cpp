@@ -20,7 +20,6 @@ const int HoughHistoThreshold = 1;
 const int HoughKNThreshold = 1;
 const int HoughCenterThreshold = 1000;
 
-const unsigned char col1[3]={255,255,0}, col2[3]={0,0,0}, col3[3]={255,0,0}, col4[3]={0,255,0};
 typedef struct center_point_type {
     int a0, b0;
     center_point_type() = default;
@@ -64,7 +63,6 @@ typedef struct ellipse_type{
 } ELLIPSE;
 
 
-
 /*******************************************************************************
  
  MaxDetection: Compute local maximum
@@ -89,173 +87,13 @@ void MaxDetection(CImg<> ImgIn, CImg<> &ImgOut)
     }
 }
 
-
-void MaxDetection(CImg<long> ImgIn, CImg<long> &ImgOut){
-    ImgOut.fill(0);
-    CImgList<> ImgInGrad = ImgIn.get_gradient("xy",4);
-    
-    cimg_forXY(ImgOut,x,y)
-    {
-        float norm = sqrt(ImgInGrad[0](x,y)*ImgInGrad[0](x,y)+ImgInGrad[1](x,y)*ImgInGrad[1](x,y));
-        
-        float dx = ImgInGrad[0](x,y)/norm;
-        float dy = ImgInGrad[1](x,y)/norm;
-        
-        if(ImgIn(x,y)>ImgIn.linear_atXY(x+dx,y+dy) && ImgIn(x,y)>ImgIn.linear_atXY(x-dx,y-dy))
-            ImgOut(x,y) = ImgIn(x,y);
-    }
-}
-
-
-
- void findLocalMax(CImg<> Acc, CImg<> &Out, unsigned long long min_local_max_value, float sample_proportion_for_local_max){
-     Out.fill(0);
-    int count;
-    int i, j;
-    cimg_forXY(Acc,x,y){
-        if(Acc(x,y) == -1)
-            continue;
-        
-        int x_c = x/2;
-        int y_c = y/2;
-        unsigned long long val_c = Acc(x_c,y_c);
-        
-        if(val_c < min_local_max_value)
-            continue;
-        
-        bool max_value_flag = true;
-        float average_value = 0;
-        int num_tests = (int )(Acc.height() * Acc. width() * sample_proportion_for_local_max);
-        for(count = 0; count < num_tests; ++count){
-            i = (int )(drand48() * (float )Acc.width());
-            j = (int )(drand48() * (float )Acc.height());
-            if(Acc(i, j) > val_c){
-                max_value_flag = false;
-                break;
-                
-            }
-            else{
-                average_value += (float) Acc(i, j);
-                
-            }
-            
-            //Biggest value?
-            average_value /= (float )num_tests;
-            if(((float) val_c) < (2.0*average_value))
-                continue;
-            
-            //Is it a local maxima?
-            max_value_flag = true;
-            cimg_forXY(Acc, i, j)
-                if(Acc(i,j) > val_c)
-                {
-                    max_value_flag = false;
-                    break;
-                }
-            if(max_value_flag == false)
-                continue;
-            
-            //Here we have a local maxima
-            Out(x_c, y_c) = Acc(x_c, y_c);
-            
-            /* To stop us finding another local maximum near
-             * this one, we will mark all histogram entries
-             * in the window by setting them to -1.
-             */
-            for (i=x-5; i < x+5 && i < Acc.width(); ++i)
-                for (j=y-5; j < y+5 &&j < Acc.height(); ++j)
-                    Acc(i,j) = -1;
+/***************************************************************
+  IsLocalMax: Tells if the point (a0,b0) is a local max of an accumulator
+ Acc:   Accumulator
+ a0 : x coordinate
+ b0: y coordinate
  
-            
-        }
-        
-    }
-}
-int MaxHisto(CImg<long>& Histo){
-    long max = -1;
-    int i = -1;
-    cimg_forX(Histo, ax)
-    if(Histo(ax) > max){
-            max = Histo(ax);
-            i = ax;
-    }
-    
-    return i;
-}
-void findLocalMaxHisto(CImg<long> Acc, CImg<long> &Out, unsigned long long min_local_max_value, float sample_proportion_for_local_max){
-    Out.fill(0);
-    int count;
-    int i;
-    cimg_forX(Acc,x){
-        if(Acc(x) == -1)
-            continue;
-        
-        int x_c = x/2;
-        
-        unsigned long long val_c = Acc(x_c);
-        
-        if(val_c < min_local_max_value)
-            continue;
-        
-        bool max_value_flag = true;
-        float average_value = 0;
-        int num_tests = (int )(Acc. width() * sample_proportion_for_local_max);
-        for(count = 0; count < num_tests; ++count){
-            i = (int )(drand48() * (float )Acc.width());
-          
-            if(Acc(i) > val_c){
-                max_value_flag = false;
-                break;
-                
-            }
-            else{
-                average_value += (float) Acc(i+x);
-                
-            }
-            
-            //Biggest value?
-            average_value /= (float )num_tests;
-            if(((float) val_c) < (2.0*average_value))
-                continue;
-            
-            //Is it a local maxima?
-            max_value_flag = true;
-            cimg_forX(Acc, i)
-            if(Acc(i) > val_c)
-            {
-                max_value_flag = false;
-                break;
-            }
-            if(max_value_flag == false)
-                continue;
-            
-            //Here we have a local maxima
-            Out(x_c) = Acc(x_c);
-            
-            /* To stop us finding another local maximum near
-             * this one, we will mark all histogram entries
-             * in the window by setting them to -1.
-             */
-            for (i=x; i < Acc.width(); ++i)
-                Acc(i) = -1;
-            
-            
-        }
-        
-    }
-}
-
-
-void MaxAccCenter(CImg<> &Acc, int& a0, int& b0){
-    long max = -1;
-    cimg_forXY(Acc,x,y)
-    if(Acc(x, y) > max){
-        max = Acc(x,y);
-        a0 = x;
-        b0 =y;
-    }
-   
-}
+ *************************************************************/
 bool IsLocalMax(CImg<> &Acc, int a0, int b0){
      long max = Acc(a0,b0);
     for(int dx = -4; dx < 4; ++dx)
@@ -267,6 +105,15 @@ bool IsLocalMax(CImg<> &Acc, int a0, int b0){
             }
     return true;
 }
+
+/***************************************************************
+ MaxAccCenterModifyAcc: Computes the maximum of the center accumulator, erasing the point afterwards. 
+Returns true if a maximum can be computed, false otherwise.
+ Acc:   Accumulator
+ a0 : returned x coordinate
+ b0: returned y coordinate
+ 
+ *************************************************************/
 bool MaxAccCenterModifyAcc(CImg<> &Acc, int& a0, int& b0){
     a0 = -1;
     b0 = -1;
@@ -296,18 +143,12 @@ bool MaxAccCenterModifyAcc(CImg<> &Acc, int& a0, int& b0){
     return isThereACenter;
 }
 
-void MaxAccKN(CImg<> &Acc, int& atanK, int& atanN){
-    
-    long  max = -1;
-    for(int x = 0; x < Acc.width(); ++x)
-        for(int y = 0; y < Acc.height(); ++y){
-            if(Acc(x,y) > max){
-                max = Acc(x,y);
-                atanK = x;
-                atanN = y;
-            }
-        }
-}
+/***************************************************************
+ proportion_ellipse: How much of an ellipse exists in an image
+ ImgIn:   Image
+ ellipse : Ellipse
+ min_dist: Maximum error allowed
+ *************************************************************/
 float proportion_ellipse(CImg<>& ImgIn, ELLIPSE ellipse,float min_dist ){
     float count= 0.0;
     float perimeter;
@@ -335,22 +176,13 @@ float proportion_ellipse(CImg<>& ImgIn, ELLIPSE ellipse,float min_dist ){
     
 }
 
-void checkAngle(float& angle){
-   
-    if(angle < 0){
-        if(angle < -2*M_PI)
-            angle = fmod(angle, 2*M_PI) +2*M_PI;
-        else
-            angle += 2*M_PI;
-    }
-    else if(angle > 2*M_PI){
-        angle = fmod(angle, 2*M_PI);
-    }
-    
-    
-    
-}
-
+/***************************************************************
+ IsLocalMaxOfHisto: Tells if a cell is a local maximum of an histogram
+ Acc:   Accumulator
+ a0 : x coordinate
+ b0: y coordinate
+ 
+ *************************************************************/
 bool IsLocalMaxOfHisto(CImg<long>& Histo, int index){
     long max = Histo(index);
     for(int dx = -4; dx < 4; ++dx)
@@ -360,6 +192,13 @@ bool IsLocalMaxOfHisto(CImg<long>& Histo, int index){
     return true;
             
 }
+
+/***************************************************************
+ MaxHistoModifyAcc: Compute the cell where the maximum of an histogram is located.
+ Histo:   Histogram
+ index : Position of the maximum of the histogram
+ 
+ *************************************************************/
 bool MaxHistoModifyAcc(CImg<long>& Histo, int& index){
     long max = -1;
     index = -1;
@@ -376,6 +215,12 @@ bool MaxHistoModifyAcc(CImg<long>& Histo, int& index){
                 Histo(index+dx) = -1;
     return isThereAx;
 }
+
+/***************************************************************
+ maxAccKNModifyAcc: Computes the position of the maximum value of a KN accumulator
+ Acc:   Accumulator
+ angles: Position (atanK, atanN) of the maximum of the KN accumulator
+ *************************************************************/
 bool maxAccKNModifyAcc(CImg<>& Acc, ANGLES& angles){
     int atanK = -1;
     int atanN = -1;
@@ -400,115 +245,21 @@ bool maxAccKNModifyAcc(CImg<>& Acc, ANGLES& angles){
         
         angles.atanK = atanK;
         angles.atanN = atanN;
-    }
+}
         
   
     
     return areThereAngles;
     
-    }
+}
 
-
+/***************************************************************
+ existsEllipse: Tells if a determined ellipse exists in an image.
+ ImgIn:   Image
+ ellipse: Ellipse to be found
+ 
+ *************************************************************/
 bool existsEllipse(CImg<> &ImgIn, const ELLIPSE& ellipse){
-    /*
-    float min_ellipse_proportion = 0.2;
-    float a_over_b;
-    int a,b, a0,b0;
-    int ax = maxHisto(Histo);
-    float ay, by, bx;
-    int atanK, atanN;
-    float K, N,atanKrad, atanNrad;
-    MaxAccKN(Acc2, atanK, atanN);
-    MaxAccCenter(Acc1, a0, b0);
-    atanKrad = DEGREES_TO_RADIANS(atanK);
-    atanNrad = DEGREES_TO_RADIANS(atanN);
-    K = tan(atanKrad);
-    N = tan(atanNrad);
-    ay = K*ax;
-    by = N*ax;
-    bx = -ay*by /ax;
-    a = sqrt(ax*ax + ay*ay);
-    b = sqrt(bx*bx+by*by);
-    unsigned char purple[] = { 233,100,125 };
-    if(a > 0 && b > 0){
-    ///////
-    float proportion = proportion_ellipse(ImgIn, a0,b0, a, b, atanK, 5);
-    if(a != 0 && b != 0){
-        if(a > b){
-            a_over_b = ((float)a) / (float)b;
-        } else {
-            a_over_b = ((float)b) / ((float)a);
-        }
-    } else {
-        a_over_b = 0;
-    }
-    //if ( (proportion > min_ellipse_proportion) && (a >= min_ellipse/2.0 && b >= min_ellipse/2.0 ) && a_over_b >= 1.50 )
-    if ( (proportion > min_ellipse_proportion)  && a_over_b >= 1.20 )
-         ImgIn.draw_ellipse(a0, b0, a, b,atanK,purple,1,1);
-    
-    
-    /////
-    
-    }
-     */
-    
-    /*
-    int atanK;
-    int atanN;
-    CImg<> Acc1Copy(Acc1);
-    CImg <> Acc2Copy(Acc2);
-    CImg<> HistoCopy(Histo);
-    for(int i = 0; i < numMaxEllipses; ++i){
-        int a0, b0;
-        MaxAccCenterModifyAcc(Acc1, a0, b0);
-        std::cout << "Max Acc1:" << a0 << ", " << b0 << std::endl;
-        int ax = MaxHistoModifyAcc(Histo);
-        std::cout << "Max ax:" << ax << std::endl;
-        //cimg_forXY(Acc1, a0, b0)
-        if(Acc1Copy(a0,b0) > 0){
-            
-            maxAccKNModifyAcc(Acc2, atanK, atanN);
-                if(Acc2Copy(atanK, atanN) > 0){
-                    std::cout << "Max Acc2:" << atanK << ", " << atanN << std::endl;
-
-                    
-                    
-                            float min_ellipse_proportion = 0.2;
-                            float a_over_b;
-                            float atanKrad = DEGREES_TO_RADIANS(atanK);
-                            float atanNrad = DEGREES_TO_RADIANS(atanN);
-                            float K = tan(atanKrad);
-                            float N = tan(atanNrad);
-                            float ay = K*ax;
-                            float by = N*ax;
-                            float bx = -ay*by /ax;
-                            float a = sqrt(ax*ax + ay*ay);
-                            float b = sqrt(bx*bx+by*by);
-                            unsigned char purple[] = { 233,100,125 };
-                            if(a > 0 && b > 0){
-                                ///////
-                                float proportion = proportion_ellipse(ImgIn, a0,b0, a, b, atanK, 5);
-                                if(a != 0 && b != 0){
-                                    if(a > b){
-                                        a_over_b = ((float)a) / (float)b;
-                                    } else {
-                                        a_over_b = ((float)b) / ((float)a);
-                                    }
-                                } else {
-                                    a_over_b = 0;
-                                }
-                                //if ( (proportion > min_ellipse_proportion) && (a >= min_ellipse/2.0 && b >= min_ellipse/2.0 ) && a_over_b >= 1.50 )
-                                if ( (proportion > min_ellipse_proportion)  && a_over_b >= 1.20 )
-                                    //There is an ellipse;
-                                  //  ImgIn.draw_ellipse(a0, b0, a, b,atanK,purple,1,1);
-                        
-                    
-                    
-                }
-
-        
-        }} */
-    
     float min_ellipse_proportion = 1.2;
     float a_over_b;
     float a = ellipse.a;
@@ -535,7 +286,10 @@ bool existsEllipse(CImg<> &ImgIn, const ELLIPSE& ellipse){
     return false;
 }
 
-
+/***************************************************************
+ Module: Computes the module of an image
+ image:   Image
+ *************************************************************/
 CImg<> Module (CImg<> image)
 {
 	//CImgList<float> list = image.get_gradient("xy", 0);
@@ -553,32 +307,12 @@ CImg<> Module (CImg<> image)
     
 }
 
-
-
-
-/******************************************
- Calcul de la phase du gradient de l'image imageIn
- ******************************************/
-CImg<float> Phase (CImg<unsigned char> imageIn)
-{
-    CImg <> Px(3,3,1,1), Py(3,3,1,1);
-    
-    Px(0,0)=-1; Px(0,1)=-1; Px(0,2)=-1;
-    Px(1,0)=0;  Px(1,1)=0;  Px(1,2)=0;
-    Px(2,1)=1;  Px(2,0)=1;  Px(2,2)=1;
-    
-    Py(0,0)=-1; Py(0,1)=0; Py(0,2)=1;
-    Py(1,0)=-1; Py(1,1)=0; Py(1,2)=1;
-    Py(2,1)=-1; Py(2,0)=0; Py(2,2)=1;
-    
-    CImg<double> img_x = imageIn.get_convolve(Px);
-    CImg<double> res   = imageIn.get_convolve(Py);
-    res.atan2(img_x);
+/***************************************************************
+ AccumulateCenters: Computes the accumulator of centers of ellipses
+ ImgIn:   Image
+ Acc1: Accumulator of centers
  
-    
-    return res;
-}
-
+ *************************************************************/
 bool AccumulateCenters(CImg<> ImgIn, CImg<> &Acc1)
 {
     bool isACenterFound = false;
@@ -604,31 +338,22 @@ bool AccumulateCenters(CImg<> ImgIn, CImg<> &Acc1)
             float m2 = -xw/yw;
             
             if ( module(x1, y1) > DETECT && module(x2, y2) > DETECT && abs(m1-m2) > DEGREES_TO_RADIANS(10)) {
-                
-              
                 int xm = (x1+x2)/2, ym = (y1+y2)/2;
-                
                 float xt = ((xv*xw)/(yv*xw - yw*xv)) * (y2-y1 + x1*(yv/xv) - x2*(yw/xw));
                 float yt = y1 + (xt - x1) * (yv/xv);
                 
                 if (xt < 0 || xt >= module.width() || yt < 0 || yt >= module.height())
                     continue;
-                
-           
-                
                 int b0 = 0;
                 
                 // Variation de a0
                 for (int a0 = 0; a0 < module.width(); ++a0)
                 {
-                    
-                   
                     b0 = (a0 - xm) * ((yt-ym)/(xt-xm)) + ym;
                     
                     
                     if (b0 >= module.height() || b0 < 0)
                         continue;
-                    
                     
                     Acc1(a0, b0) += 1;
                     if(!isACenterFound)
@@ -645,9 +370,18 @@ bool AccumulateCenters(CImg<> ImgIn, CImg<> &Acc1)
     
 }
 
-
-
-
+/***************************************************************
+ ExtractCandidateEllipses: Computes all the possible ellipses that could be found in an image
+ ImgIn:   Image
+ candidateEllipses : Possible ellipses in the image
+ centers:  Accumulator of centers to be used
+ minA: Minimum length of the small semi-axe
+ maxA: Maximum length of the small semi-axe
+ minB: Minimum length of the big semi-axe
+ maxB: Maximum length of the big semi-axe
+ numEllipses: Maximum number of ellipses to be found
+ 
+ *************************************************************/
 void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses, const vector<CENTER>& centers, int minA, int maxA, int minB, int maxB, int numEllipses){
     
     int
@@ -661,8 +395,6 @@ void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses,
     CImg<> module(ImgIn.width(), ImgIn.height());
     CImg<> Acc2(180, 180);
     module = Module(ImgIn);
-    CImg<> phase(ImgIn.width(), ImgIn.height());
-    phase = Phase(ImgIn);
     CImgList<> grad = ImgIn.get_gradient("xy", 3);
     for(int i = 0; i < numEllipses; ++i){
         CENTER center = centers.at(i);
@@ -761,9 +493,6 @@ void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses,
                                     }
                                 }
     }
-    
-        /* TODO: Make threshold of Acc2 here? 1 ellipse -> 1 Acc */
-        
         /* Threshold accumulators */
         if(isThereACandidate){
             CImg<> Acc2Thresholded(Acc2.width(), Acc2.height());
@@ -840,11 +569,6 @@ void ExtractCandidateEllipses(CImg<> &ImgIn, vector<ELLIPSE>& candidateEllipses,
             isThereACandidate = false;
         }
     
-        
-    
-    
-    
-    
 }
 
 /*******************************************************************************
@@ -892,15 +616,14 @@ int main(int argc,char **argv)
     Acc1Maxima.fill(0);
 
     const CImg<> Acc1Copy(Acc1Thresholded);
+    
     /* Display centers accumulator */
     CImgDisplay acc1Spatial(Acc1Copy, "Acc1 Thresholded");
     
     
     /*
-      Save centers in a vector of centers depending on the number of ellipses.
-      We suppose here that a center corresponds to one and only one ellipse.
+      Save centers in a vector of centers.
      */
-    
     vector<CENTER> centers;
     for(int i = 0; i < numMaxEllipses; ++i){
         int a0, b0;
@@ -914,8 +637,6 @@ int main(int argc,char **argv)
     /*********************************************************/
     /* Accumulation of centers finished */
     /**********************************************************/
-
-
     vector<ELLIPSE> candidateEllipses;
     ExtractCandidateEllipses(img, candidateEllipses, centers, minA, maxA, minB,maxB,numMaxEllipses);
     int drawn = 0;
